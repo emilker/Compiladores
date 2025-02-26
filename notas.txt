@@ -1,0 +1,2 @@
+play_sound(Cn4, Negra)
+play_chord([C4, E4, G4], Blanca)
