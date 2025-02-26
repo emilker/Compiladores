@@ -30,4 +30,4 @@ RBRACKET     "\]"
 {LETTER}({LETTER}|{DIGIT}|_)* { return TOKEN_IDENTIFIER; }
 %%
 
-int yywrap() { return 1; }c
+int yywrap() { return 1; }
