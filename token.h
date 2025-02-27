@@ -4,8 +4,9 @@
 typedef enum
 {
     TOKEN_EOF = 0,
-    TOKEN_PLAY_SOUND = 258,
-    TOKEN_PLAY_CHORD = 259,
+    TOKEN_PLAY_SOUND = 257,
+    TOKEN_PLAY_CHORD = 258,
+    TOKEN_PLAY_REST = 259,
     TOKEN_NOTE = 260,
     TOKEN_DURATION = 261,
     TOKEN_COMMA = 262,
@@ -23,6 +24,7 @@ inline const char* to_str(token_t t)
     {
         case TOKEN_PLAY_SOUND: return "PLAY_SOUND";
         case TOKEN_PLAY_CHORD: return "PLAY_CHORD";
+        case TOKEN_PLAY_REST: return "PLAY_REST";
         case TOKEN_NOTE: return "NOTE";
         case TOKEN_DURATION: return "DURATION";
         case TOKEN_COMMA: return "COMMA";
