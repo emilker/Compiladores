@@ -1,2 +1,6 @@
 play_sound(Cn4, Negra)
+PLAY_SOUND()
 play_chord([C4, E4, G4], Blanca)
+note 
+//
+05663

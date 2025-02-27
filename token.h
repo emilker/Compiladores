@@ -14,7 +14,7 @@ typedef enum
     TOKEN_LBRACKET = 265, // [
     TOKEN_RBRACKET = 266, // ]
     TOKEN_IDENTIFIER = 267,
-    TOKEN_ERROR = 268
+    TOKEN_UNKNOWN = 268
 }token_t;
 
 inline const char* to_str(token_t t)
@@ -31,7 +31,6 @@ inline const char* to_str(token_t t)
         case TOKEN_LBRACKET: return "LBRACKET";
         case TOKEN_RBRACKET: return "RBRACKET";
         case TOKEN_IDENTIFIER: return "IDENTIFIER";
-        case TOKEN_ERROR: return "ERROR";
         default: return "UNKNOWN";
     }
 }

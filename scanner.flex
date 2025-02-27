@@ -2,7 +2,7 @@
 #include "token.h"
 %}
 
-SPACE        [ \t\n\r]
+SPACE        [\t\n\r]
 DIGIT        [1-8]
 LETTER       [A-Za-z]
 NOTE         [CDEFGAB][#bn]?[1-8]
@@ -28,6 +28,9 @@ RBRACKET     "\]"
 {RBRACKET}   { return TOKEN_RBRACKET; }
 
 {LETTER}({LETTER}|{DIGIT}|_)* { return TOKEN_IDENTIFIER; }
+
+.|\n         { return TOKEN_UNKNOWN; }
+
 %%
 
 int yywrap() { return 1; }
