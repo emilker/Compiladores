@@ -5,29 +5,47 @@
 SPACE        [ \t\n\r]
 DIGIT        [1-8]
 LETTER       [A-Za-z]
-NOTE         [CDEFGAB][#bn]?[1-8]
-DURATION     (Negra|Blanca|Corchea|Semicorchea|Fusa|Semifusa)
-PLAY_SOUND   "play_sound"
-PLAY_CHORD   "play_chord"
-PLAY_REST    "play_rest"
+NOTE         [CDEFGAB][#bn]?[1-8]?
+DURATION     [-]?[qhes]
+TIME         "time"
+KEY          "key"
+MAJOR        "major"
+MINOR        "minor"
+CLEF         "clef"
+SECTION      "section"
+REPEAT       "repeat"
 COMMA        ","
+SEMICOLON     ";"
 LPAREN       "\("
 RPAREN       "\)"
 LBRACKET     "\["
 RBRACKET     "\]"
+PIPE         "\|"
+SLASH        "/"
+LBRACE       "\{"
+RBRACE       "\}"
 
 %%
 {SPACE}      {}
-{PLAY_SOUND} { return TOKEN_PLAY_SOUND; }
-{PLAY_CHORD} { return TOKEN_PLAY_CHORD; }
-{PLAY_REST}  { return TOKEN_PLAY_REST; }
+{DIGIT}      { return TOKEN_DIGIT; }
+{TIME}       { return TOKEN_TIME; }
 {NOTE}       { return TOKEN_NOTE; }
 {DURATION}   { return TOKEN_DURATION; }
+{KEY}        { return TOKEN_KEY; }
+{MAJOR}      { return TOKEN_MAJOR; }
+{MINOR}      { return TOKEN_MINOR; }
+{CLEF}       { return TOKEN_CLEF; }
+{SECTION}    { return TOKEN_SECTION; }
+{REPEAT}     { return TOKEN_REPEAT; }
 {COMMA}      { return TOKEN_COMMA; }
+{SEMICOLON}  { return TOKEN_SEMICOLON; }
 {LPAREN}     { return TOKEN_LPAREN; }
 {RPAREN}     { return TOKEN_RPAREN; }
 {LBRACKET}   { return TOKEN_LBRACKET; }
 {RBRACKET}   { return TOKEN_RBRACKET; }
+{PIPE}       { return TOKEN_PIPE; }
+{LBRACE}     { return TOKEN_LBRACE; }
+{RBRACE}     { return TOKEN_RBRACE; }
 
 {LETTER}({LETTER}|{DIGIT}|_)* { return TOKEN_IDENTIFIER; }
 
