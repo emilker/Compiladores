@@ -20,12 +20,14 @@ typedef enum
     TOKEN_RPAREN = 270,   // )
     TOKEN_LBRACKET = 271, // [
     TOKEN_RBRACKET = 272, // ]
-    TOKEN_PIPE = 273,     // |
+    TOKEN_PIPE = 273,     // \}
     TOKEN_SLASH = 274,    // /
     TOKEN_LBRACE = 275,   // {
     TOKEN_RBRACE = 276,   // }
     TOKEN_IDENTIFIER = 277,
-    TOKEN_UNKNOWN = 278, 
+    TOKEN_BAR_LINE = 278, // |
+    TOKEN_REST = 279,
+    TOKEN_UNKNOWN = 280, 
 }token_t;
 
 inline const char* to_str(token_t t)
@@ -46,6 +48,8 @@ inline const char* to_str(token_t t)
         case TOKEN_LBRACKET: return "LBRACKET";
         case TOKEN_RBRACKET: return "RBRACKET";
         case TOKEN_PIPE: return "PIPE";
+        case TOKEN_BAR_LINE: return "BAR_LINE";
+        case TOKEN_REST: return "REST";
         case TOKEN_SLASH: return "SLASH";
         case TOKEN_LBRACE: return "LBRACE";
         case TOKEN_RBRACE: return "RBRACE";

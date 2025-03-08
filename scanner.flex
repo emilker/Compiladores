@@ -14,13 +14,15 @@ MINOR        "minor"
 CLEF         "clef"
 SECTION      "section"
 REPEAT       "repeat"
+BAR_LINE     "|"
+REST         "-"
 COMMA        ","
 SEMICOLON     ";"
 LPAREN       "\("
 RPAREN       "\)"
 LBRACKET     "\["
 RBRACKET     "\]"
-PIPE         "\|"
+PIPE         "\\"
 SLASH        "/"
 LBRACE       "\{"
 RBRACE       "\}"
@@ -46,6 +48,8 @@ RBRACE       "\}"
 {PIPE}       { return TOKEN_PIPE; }
 {LBRACE}     { return TOKEN_LBRACE; }
 {RBRACE}     { return TOKEN_RBRACE; }
+{BAR_LINE}   { return TOKEN_BAR_LINE; }
+{REST}       { return TOKEN_REST; }
 
 {LETTER}({LETTER}|{DIGIT}|_)* { return TOKEN_IDENTIFIER; }
 

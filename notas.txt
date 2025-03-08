@@ -7,7 +7,7 @@ time 4/4
 key C major
 clef G2
 repeat 2 {
-    C4 q D4 q E4 q F4 q | G4 h A4 q G4 q
+    -C4 q D4 q E4 q F4 q | G4 h A4 q G4 q
 }
 
--h
+-
