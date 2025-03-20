@@ -59,11 +59,11 @@ key  : TOKEN_KEY TOKEN_NOTE TOKEN_MAJOR
 clef : TOKEN_CLEF TOKEN_NOTE
      ;           
 
-section : TOKEN_SECTION TOKEN_IDENTIFIER proposition
-        | TOKEN_REPEAT TOKEN_DIGIT proposition 
+section : TOKEN_SECTION TOKEN_IDENTIFIER expression
+        | TOKEN_REPEAT TOKEN_DIGIT expression 
         ;
 
-proposition : TOKEN_LBRACE compasses TOKEN_RBRACE
+expression : TOKEN_LBRACE compasses TOKEN_RBRACE
             ;
 
 compasses : compasses TOKEN_COMMA note
