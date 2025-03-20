@@ -55,4 +55,4 @@ Esto generará un ejecutable llamado, por ejemplo, validator.
 - Crea un archivo de entrada de tus notas musicales (por ejemplo, notas.txt):
 Luego, ejecuta el analizador
 
-./validator entrada.txt
+./validator nota.txt
