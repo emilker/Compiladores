@@ -6,16 +6,14 @@ SPACE        [ \t\n\r]
 DIGIT        [1-8]
 LETTER       [A-Za-z]
 NOTE         [A-G][#bn]?[1-8]?
-DURATION     [qhes]
+DURATION     [qhesw]
 TIME         "time"
-KEY          "key"
-MAJOR        "major"
-MINOR        "minor"
-CLEF         "clef"
 SECTION      "section"
 REPEAT       "repeat"
 BAR_LINE     "|"
 REST         "-"
+DOTTED       "."
+SHARP        "#"
 COMMA        ","
 SEMICOLON     ";"
 LPAREN       "\("
@@ -34,11 +32,9 @@ POINT        "\."
 {DIGIT}      { return TOKEN_DIGIT; }
 {TIME}       { return TOKEN_TIME; }
 {NOTE}       { return TOKEN_NOTE; }
+{SHARP}      { return TOKEN_SHARP; }
+{DOTTED}     { return TOKEN_DOTTED; }
 {DURATION}   { return TOKEN_DURATION; }
-{KEY}        { return TOKEN_KEY; }
-{MAJOR}      { return TOKEN_MAJOR; }
-{MINOR}      { return TOKEN_MINOR; }
-{CLEF}       { return TOKEN_CLEF; }
 {SECTION}    { return TOKEN_SECTION; }
 {REPEAT}     { return TOKEN_REPEAT; }
 {COMMA}      { return TOKEN_COMMA; }

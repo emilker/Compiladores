@@ -7,9 +7,6 @@ int yyerror(const char*);
 %}
 
 %token TOKEN_EOF
-%token TOKEN_KEY
-%token TOKEN_MAJOR
-%token TOKEN_CLEF
 %token TOKEN_TIME
 %token TOKEN_NOTE
 %token TOKEN_DURATION
@@ -32,6 +29,8 @@ int yyerror(const char*);
 %token TOKEN_REST
 %token TOKEN_POINT
 %token TOKEN_UNKNOWN
+%token TOKEN_DOTTED
+%token TOKEN_SHARP
 
 %%
 program : statement;
@@ -45,19 +44,10 @@ statement : assignment statement
           ;
                
 assignment :  time 
-           |  key
-           |  clef
            ;
            
 time : TOKEN_TIME TOKEN_DIGIT TOKEN_SLASH TOKEN_DIGIT
      ;
-
-key  : TOKEN_KEY TOKEN_NOTE TOKEN_MAJOR
-     | TOKEN_KEY TOKEN_NOTE TOKEN_MINOR
-     ;
-
-clef : TOKEN_CLEF TOKEN_NOTE
-     ;           
 
 section : TOKEN_SECTION TOKEN_IDENTIFIER expression
         | TOKEN_REPEAT TOKEN_DIGIT expression 
@@ -74,6 +64,9 @@ compasses : compasses TOKEN_COMMA note
 note : TOKEN_NOTE TOKEN_DURATION 
      | TOKEN_NOTE TOKEN_DURATION TOKEN_POINT
      | TOKEN_REST TOKEN_DURATION
+     | TOKEN_NOTE TOKEN_DURATION TOKEN_DOTTED
+     | TOKEN_NOTE TOKEN_SHARP TOKEN_DURATION
+     | TOKEN_NOTE TOKEN_SHARP TOKEN_DURATION TOKEN_DOTTED
      ;
 %%
 
