@@ -33,7 +33,7 @@ POINT        "\."
 {NOTE}       { return TOKEN_NOTE; }
 {SHARP}      { return TOKEN_SHARP; }
 {DOTTED}     { return TOKEN_DOTTED; }
-{DURATION}   { return TOKEN_DURATION; }g
+{DURATION}   { return TOKEN_DURATION; }
 {SECTION}    { return TOKEN_SECTION; }
 {REPEAT}     { return TOKEN_REPEAT; }
 {COMMA}      { return TOKEN_COMMA; }
