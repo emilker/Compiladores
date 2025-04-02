@@ -1,19 +1,40 @@
 %{
 #include <iostream>
 
+#include <expression.hpp>
+
+#define YYSTYPE Expression*
+
 extern int yylex();
 extern char* yytext;
 int yyerror(const char*);
 %}
 
+
+
+
+
+
+extern int yylex();
+extern char* yytext;
+int yyerror(const char*);
+Expression* parser_result{nullptr};
+
+
+
+
+
+
+
+
 %token TOKEN_EOF
 %token TOKEN_TIME
 %token TOKEN_NOTE
+%token TOKEN_ALTERATION
 %token TOKEN_DURATION
 %token TOKEN_SECTION
 %token TOKEN_REPEAT
 %token TOKEN_DIGIT
-%token TOKEN_MINOR
 %token TOKEN_COMMA
 %token TOKEN_SEMICOLON
 %token TOKEN_LPAREN
@@ -30,31 +51,23 @@ int yyerror(const char*);
 %token TOKEN_POINT
 %token TOKEN_UNKNOWN
 %token TOKEN_DOTTED
-%token TOKEN_SHARP
 
 %%
 program : statement;
 
-statement : assignment statement 
-          | section statement 
+statement : declarations statement 
           | compasses statement
-          | assignment
-          | section
+          | declarations
           | compasses
           ;
                
-assignment :  time 
-           ;
-           
-time : TOKEN_TIME TOKEN_DIGIT TOKEN_SLASH TOKEN_DIGIT
-     ;
-
-section : TOKEN_SECTION TOKEN_IDENTIFIER expression
-        | TOKEN_REPEAT TOKEN_DIGIT expression 
-        ;
+declarations :  TOKEN_TIME TOKEN_DIGIT TOKEN_SLASH TOKEN_DIGIT
+             |  TOKEN_SECTION TOKEN_IDENTIFIER expression
+             |  TOKEN_REPEAT TOKEN_DIGIT expression 
+             ;
 
 expression : TOKEN_LBRACE compasses TOKEN_RBRACE
-            ;
+           ;
 
 compasses : compasses TOKEN_COMMA note
           | compasses TOKEN_BAR_LINE note
@@ -62,11 +75,10 @@ compasses : compasses TOKEN_COMMA note
           ;
 
 note : TOKEN_NOTE TOKEN_DURATION 
-     | TOKEN_NOTE TOKEN_DURATION TOKEN_POINT
-     | TOKEN_REST TOKEN_DURATION
      | TOKEN_NOTE TOKEN_DURATION TOKEN_DOTTED
-     | TOKEN_NOTE TOKEN_SHARP TOKEN_DURATION
-     | TOKEN_NOTE TOKEN_SHARP TOKEN_DURATION TOKEN_DOTTED
+     | TOKEN_REST TOKEN_DURATION
+     | TOKEN_NOTE TOKEN_ALTERATION TOKEN_DURATION
+     | TOKEN_NOTE TOKEN_ALTERATION TOKEN_DURATION TOKEN_DOTTED
      ;
 %%
 

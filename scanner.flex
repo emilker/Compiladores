@@ -6,6 +6,7 @@ SPACE        [ \t\n\r]
 DIGIT        [1-8]
 LETTER       [A-Za-z]
 NOTE         [A-G][#bn]?[1-8]?
+ALTERATION   [#bn] 
 DURATION     [qhesw]
 TIME         "time"
 SECTION      "section"
@@ -13,9 +14,8 @@ REPEAT       "repeat"
 BAR_LINE     "|"
 REST         "-"
 DOTTED       "."
-SHARP        "#"
 COMMA        ","
-SEMICOLON     ";"
+SEMICOLON    ";"
 LPAREN       "\("
 RPAREN       "\)"
 LBRACKET     "\["
@@ -31,7 +31,7 @@ POINT        "\."
 {DIGIT}      { return TOKEN_DIGIT; }
 {TIME}       { return TOKEN_TIME; }
 {NOTE}       { return TOKEN_NOTE; }
-{SHARP}      { return TOKEN_SHARP; }
+{ALTERATION} { return TOKEN_ALTERATION; }
 {DOTTED}     { return TOKEN_DOTTED; }
 {DURATION}   { return TOKEN_DURATION; }
 {SECTION}    { return TOKEN_SECTION; }
