@@ -10,11 +10,12 @@ class Compasses;
 class Expression;
 class Note;
 
-
 class ASTNodeInterface
 {
 public:
     virtual ~ASTNodeInterface() noexcept;
 
     virtual void destroy() noexcept = 0;
+
+    //virtual int eval() noexcept = 0; // implemetar una funcion para generar sonido
 };

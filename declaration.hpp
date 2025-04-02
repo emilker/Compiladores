@@ -17,33 +17,34 @@ private:
 class TimeDeclaration : public Declaration
 {
 public:
-    TimeDeclaration() noexcept;
+    TimeDeclaration(int, int) noexcept;
 
     void destroy() noexcept override;
 
 private:
-    std::string time;
+    int numerator;
+    int denominator;
 };
 
 class SectionDeclaration : public Declaration
 {
 public:
-    SectionDeclaration() noexcept;
+    SectionDeclaration(std::string) noexcept;
 
     void destroy() noexcept override;
 
 private:
-    std::string section;
+    std::string name;
 };
 
-class RepartDeclaration : public Declaration
+class RepeatDeclaration : public Declaration
 {   
 public:
-    RepartDeclaration() noexcept;
+    RepeatDeclaration(int) noexcept;
 
     void destroy() noexcept override;
 private:
-    std::string repart;
+    int repeat;
 };
 
 class ExpressionDeclaration : public Declaration

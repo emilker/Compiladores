@@ -2,8 +2,11 @@
 #include <fstream>
 #include <cstdlib>
 
+#include <ast_node_interface.hpp>
+
 extern FILE* yyin;
 extern int yyparse();
+extern ASTNodeInterface* parser_result;
 
 void usage(const char* program_name) 
 {

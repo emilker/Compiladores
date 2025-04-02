@@ -17,20 +17,22 @@ private:
 class CompassesComma : public Compasses 
 {       
 public:
-    CompassesComma() noexcept;
+    CompassesComma(Compasses*, Compasses*) noexcept;
 
     void destroy() noexcept override;
 private:
-    std::string comma;
+    Compasses* left_Compasses;
+    Compasses* right_Compasses;
 };
 
 class CompassesBarLine : public Compasses 
 {   
 public:
-    CompassesBarLine() noexcept;
+    CompassesBarLine(Compasses*,Compasses) noexcept;
 
     void destroy() noexcept override;
 private:
-    std::string bar_line;
+    Compasses* left_Compasses;
+    Compasses* right_Compasses;  
 };
 

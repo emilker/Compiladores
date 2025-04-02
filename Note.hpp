@@ -9,15 +9,13 @@ class Note: public ASTNodeInterface
 {
 public:
     Note() noexcept;
-
 private:
 
 };
-
 class SimpleNote : public Note
 {  
 public:
-    SimpleNote() noexcept;
+    SimpleNote(std::string) noexcept;
 
     void destroy() noexcept override;
 private:
@@ -27,27 +25,16 @@ private:
 class DottedNote : public Note
 {
 public:
-    DottedNote() noexcept;
+    DottedNote(std::string) noexcept;
 
     void destroy() noexcept override;
 private:
     std::string dotted_note;
 };
-
-class RestNote : public Note
-{   
-public:
-    RestNote() noexcept;
-
-    void destroy() noexcept override;
-private:
-    std::string rest_note;
-};
-
 class AlteredNote : public Note
 {
 public:
-    AlteredNote() noexcept;
+    AlteredNote(std::string) noexcept;
 
     void destroy() noexcept override;
 private:            
@@ -56,7 +43,7 @@ private:
 class AlteredDottedNote : public Note
 {       
 public:
-    AlteredDottedNote() noexcept;
+    AlteredDottedNote(std::string) noexcept;
 
     void destroy() noexcept override;
 private:

@@ -5,7 +5,7 @@
 SPACE        [ \t\n\r]
 DIGIT        [1-8]
 LETTER       [A-Za-z]
-NOTE         [A-G][#bn]?[1-8]?
+NOTE         [A-G][1-8]?
 ALTERATION   [#bn] 
 DURATION     [qhesw]
 TIME         "time"
