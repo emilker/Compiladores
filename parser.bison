@@ -13,6 +13,8 @@ Statement* parser_result{nullptr};
 
 %}
 
+
+
 %token TOKEN_EOF
 %token TOKEN_TIME
 %token TOKEN_NOTE
@@ -38,6 +40,7 @@ Statement* parser_result{nullptr};
 %token TOKEN_UNKNOWN
 %token TOKEN_DOTTED
 
+
 %%
 program : statement                                                   { parser_result = $1; }
         ;                                              
@@ -51,7 +54,7 @@ compasses : compasses TOKEN_COMMA note                                { $$ = new
           ;
 
 
-note : TOKEN_NOTE TOKEN_DURATION                                      { $$ = new SimpleNote(std::string(yytext), std::string(yytext)); }
+note : TOKEN_NOTE TOKEN_DURATION                                      { $$ = new SimpleNote("hola", "jesus"); }
      | TOKEN_NOTE TOKEN_DURATION TOKEN_DOTTED                         { $$ = new DottedNote(std::string(yytext), std::string(yytext), std::string(yytext)); } 
      | TOKEN_REST TOKEN_DURATION                                      { $$ = new SimpleNote(std::string(yytext), std::string(yytext)); }  
      | TOKEN_NOTE TOKEN_ALTERATION TOKEN_DURATION                     { $$ = new AlteredNote(std::string(yytext), std::string(yytext), std::string(yytext)); }  

@@ -1,8 +1,7 @@
 %{
-
 #include "token.h"
 #include <string>
-using namespace std;
+#include "statement.hpp"  // Necesario para Statement
 %}
 
 SPACE        [ \t\n\r]
