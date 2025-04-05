@@ -2,11 +2,11 @@
 #include <fstream>
 #include <cstdlib>
 
-#include <ast_node_interface.hpp>
+#include <statement.hpp>
 
 extern FILE* yyin;
 extern int yyparse();
-extern ASTNodeInterface* parser_result;
+extern Statement* parser_result;
 
 void usage(const char* program_name) 
 {
@@ -34,6 +34,8 @@ int main(int argc, char* argv[])
     if (result == 0)
     {
         std::cout << "Parse successful!\n" << std::endl;
+        //std::cout << parser_result->mostrar().c_str() << std::endl;
+        parser_result->destroy();
     }
     else
     {

@@ -4,8 +4,8 @@ BISON = bison -Wcounterexamples --defines=token.h
 
 all: validator
 
-validator: parser.o scanner.o main.o ast_node_interface.o
-	$(CXX) scanner.o parser.o main.o ast_node_interface.o -o validator
+validator: parser.o scanner.o main.o statement.o
+	$(CXX) scanner.o parser.o main.o statement.o -o validator
 
 parser.o: parser.cpp
 	$(CXX) -c -I. parser.cpp
@@ -16,14 +16,14 @@ parser.cpp: parser.bison
 scanner.o: token.h scanner.cpp
 	$(CXX) -c scanner.cpp
 
-scanner.cpp: scanner.flex
+scanner.cpp: scanner.flex 
 	$(FLEX) -o scanner.cpp scanner.flex
 
 main.o: token.h main.cpp
-	$(CXX) -c main.cpp
+	$(CXX) -c -I. main.cpp
 
-ast_node_interface.o: ast_node_interface.hpp ast_node_interface.cpp
-	$(CXX) -c -I. ast_node_interface.cpp	
+statement.o: statement.hpp statement.cpp
+	$(CXX) -c -I. statement.cpp	
 
 .PHONY:
 clean:

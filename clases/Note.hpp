@@ -8,6 +8,7 @@
 class Note: public ASTNodeInterface
 {
 public:
+    virtual ~Note() noexcept = default;
     Note() noexcept;
 private:
 
@@ -15,13 +16,13 @@ private:
 class SimpleNote : public Note
 {  
 public:
-    SimpleNote(std::string) noexcept;
+    SimpleNote(std::string, int) noexcept;
 
     void destroy() noexcept override;
 private:
     std::string note;
+    int duracion;
 };
-
 class DottedNote : public Note
 {
 public:

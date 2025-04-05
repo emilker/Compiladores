@@ -13,7 +13,6 @@ public:
 private:
 
 };
-
 class CompassesComma : public Compasses 
 {       
 public:
@@ -24,7 +23,6 @@ private:
     Compasses* left_Compasses;
     Compasses* right_Compasses;
 };
-
 class CompassesBarLine : public Compasses 
 {   
 public:

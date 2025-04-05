@@ -1,14 +1,16 @@
 %{
 #include <iostream>
+#include <statement.hpp>
+#include <string> 
 
-#include <ast_node_interface.hpp>
-
-#define YYSTYPE ASTNodeInterface*
+#define YYSTYPE Statement*
 
 extern int yylex();
 extern char* yytext;
 int yyerror(const char*);
-ASTNodeInterface* parser_result{nullptr};
+
+Statement* parser_result{nullptr};
+
 %}
 
 %token TOKEN_EOF
@@ -37,33 +39,23 @@ ASTNodeInterface* parser_result{nullptr};
 %token TOKEN_DOTTED
 
 %%
-program : statement;                                                   
-
-statement : declarations statement 
-          | compasses statement
-          | declarations
-          | compasses
-          ;
-               
-declarations :  TOKEN_TIME TOKEN_DIGIT TOKEN_SLASH TOKEN_DIGIT          { $$ = new TimeDeclaration($2, $4); }
-             |  TOKEN_SECTION TOKEN_IDENTIFIER expression               { $$ = new SectionDeclaration($2, $3); }
-             |  TOKEN_REPEAT TOKEN_DIGIT expression                     { $$ = new RepeartDeclaration($2, $3); }
-             ;
-
-expression : TOKEN_LBRACE compasses TOKEN_RBRACE                        { $$ = $2; }
-           | TOKEN_IDENTIFIER                                           { $$ = $1; }
-           ;
-
-compasses : compasses TOKEN_COMMA note                                  { $$ = new CompassesComma($1, $3); }
-          | compasses TOKEN_BAR_LINE note                               { $$ = new CompassesBarLine($1, $3); }
-          | note                                                        { $$ = $1; }
+program : statement                                                   { parser_result = $1; }
+        ;                                              
+statement : compasses statement                                       { $$ = new StatementSequence($1, $2); }
+          | compasses                                                 { $$ = $1; }
           ;
 
-note : TOKEN_NOTE TOKEN_DURATION                                        { $$ = new SimpleNote($1, $2); }
-     | TOKEN_NOTE TOKEN_DURATION TOKEN_DOTTED                           { $$ = new DottedNote($1, $2, $3); }
-     | TOKEN_REST TOKEN_DURATION                                        { $$ = new SimpleNote($1, $2); }
-     | TOKEN_NOTE TOKEN_ALTERATION TOKEN_DURATION                       { $$ = new SimpleNote($1, $2, $3); }
-     | TOKEN_NOTE TOKEN_ALTERATION TOKEN_DURATION TOKEN_DOTTED          { $$ = new SimpleNote($1, $2, $3, $4); }
+compasses : compasses TOKEN_COMMA note                                { $$ = new CompassesComma($1, $3); }                           
+          | compasses TOKEN_BAR_LINE note                             { $$ = new CompassesBarLine($1, $3); }
+          | note                                                      { $$ = $1; }  
+          ;
+
+
+note : TOKEN_NOTE TOKEN_DURATION                                      { $$ = new SimpleNote(std::string(yytext), std::string(yytext)); }
+     | TOKEN_NOTE TOKEN_DURATION TOKEN_DOTTED                         { $$ = new DottedNote(std::string(yytext), std::string(yytext), std::string(yytext)); } 
+     | TOKEN_REST TOKEN_DURATION                                      { $$ = new SimpleNote(std::string(yytext), std::string(yytext)); }  
+     | TOKEN_NOTE TOKEN_ALTERATION TOKEN_DURATION                     { $$ = new AlteredNote(std::string(yytext), std::string(yytext), std::string(yytext)); }  
+     | TOKEN_NOTE TOKEN_ALTERATION TOKEN_DURATION TOKEN_DOTTED        { $$ = new AlteredDottedNote(std::string(yytext), std::string(yytext), std::string(yytext), std::string(yytext)); }  
      ;
 %%
 

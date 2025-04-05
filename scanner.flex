@@ -1,5 +1,8 @@
 %{
+
 #include "token.h"
+#include <string>
+using namespace std;
 %}
 
 SPACE        [ \t\n\r]
@@ -23,8 +26,7 @@ RBRACKET     "\]"
 PIPE         "\\"
 SLASH        "/"
 LBRACE       "\{"
-RBRACE       "\}"
-POINT        "\." 
+RBRACE       "\}" 
 
 %%
 {SPACE}      {}
@@ -48,7 +50,6 @@ POINT        "\."
 {RBRACE}     { return TOKEN_RBRACE; }
 {BAR_LINE}   { return TOKEN_BAR_LINE; }
 {REST}       { return TOKEN_REST; }
-{POINT}      { return TOKEN_POINT; }
 
 {LETTER}({LETTER}|{DIGIT}|_)* { return TOKEN_IDENTIFIER; }
 

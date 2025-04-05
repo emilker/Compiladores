@@ -13,7 +13,6 @@ public:
 private:
 
 };
-
 class TimeDeclaration : public Declaration
 {
 public:
@@ -25,7 +24,6 @@ private:
     int numerator;
     int denominator;
 };
-
 class SectionDeclaration : public Declaration
 {
 public:
@@ -36,7 +34,6 @@ public:
 private:
     std::string name;
 };
-
 class RepeatDeclaration : public Declaration
 {   
 public:
@@ -45,14 +42,4 @@ public:
     void destroy() noexcept override;
 private:
     int repeat;
-};
-
-class ExpressionDeclaration : public Declaration
-{
-public:
-    ExpressionDeclaration() noexcept;
-
-    void destroy() noexcept override;
-private:
-    std::string expression;
 };

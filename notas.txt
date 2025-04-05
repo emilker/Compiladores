@@ -1,13 +1,3 @@
-time 4/4
-section Jesus {
+
     F4 w, E4 e, D4 s, C4 q | G4 h, F4 q, E4 q
-}
-time 4/4
 
-repeat 2 {
-    - q, C4#q., E4 q, F4 q | G4 h, A4 q, G4 q
-}
-
-time 4/4
-
-Jesus
