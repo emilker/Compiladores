@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility> 
 
 class Statement
 {
@@ -108,10 +109,13 @@ class Value: public Statement
 public:
     Value(std::string v) noexcept;
 
+    Value(std::pair<std::string, std::string> v) noexcept;
+
     void mostrar()  noexcept override;
 
     void destroy() noexcept override;
 
 private:
     std::string value;
+    std::pair<std::string, std::string> value_measure;
 };

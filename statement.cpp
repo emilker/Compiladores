@@ -102,7 +102,7 @@ void CompassesComma::mostrar()  noexcept
 }
 
 Value::Value(std::string v) noexcept
-    : value{v} {}
+    : value{v}{}
 
 void Value::mostrar()  noexcept
 {

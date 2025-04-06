@@ -86,6 +86,9 @@ alteration :TOKEN_ALTERATION                                                    
 dotted : TOKEN_DOTTED                                                                     { $$ = new Value(yytext);}                    
           ;
 
+time : TOKEN_TIME TOKEN_DIGIT TOKEN_SLASH TOKEN_DIGIT                                     { $$ = new Value(std::make_pair($2,$4));}
+     ;
+
 %%
 
 int yyerror(const char* s)
