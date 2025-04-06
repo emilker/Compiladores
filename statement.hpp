@@ -18,6 +18,26 @@ public:
 };
 
 
+class Time : public Statement
+{
+public:
+    Time(Statement* tiempo_, Statement* figure_, Statement* body_) noexcept;
+    
+    void mostrar()  noexcept;
+    
+    void destroy() noexcept override;
+
+    //  int eval() noexcept override;
+
+    //  std::string to_string()  noexcept override;
+
+private:
+    Statement* tiempo;
+    Statement* figure;
+    Statement* body; 
+};
+
+
 
 
 class Note : public Statement

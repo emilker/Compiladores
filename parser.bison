@@ -13,8 +13,6 @@ Statement* parser_result{nullptr};
 
 %}
 
-
-
 %token TOKEN_EOF
 %token TOKEN_TIME
 %token TOKEN_NOTE
@@ -40,16 +38,21 @@ Statement* parser_result{nullptr};
 %token TOKEN_UNKNOWN
 %token TOKEN_DOTTED
 
-
 %%
 program : statement                                                                     { parser_result = $1; }
         ;                                              
 statement : compasses statement                                                         { $$ = new StatementSequence($1, $2); }
-          | secction statement 
-          | secction
+          | secction statement                                                          { $$ = new StatementSequence($1, $2); }
+          | time statement                                                              { $$ = new StatementSequence($1, $2); }
+          | id statement                                                                { $$ = new StatementSequence($1, $2); }
+          | secction                                                                    { $$ = $1; }
+          | id                                                                          { $$ = $1; }
+          | time                                                                        { $$ = $1; }
           | compasses                                                                   { $$ = $1; }
+
           ;          
-          
+time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE                 { $$ = new Time($2, $4, $6); }
+     ;
 
 secction :  TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                        { $$ = new SectionDeclaration($2, $4); }
          |  TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                      { $$ = new SectionDeclaration($2, $4); }
@@ -66,29 +69,27 @@ compasses : compasses TOKEN_COMMA note                                          
           | note                                                                        { $$ = $1; }  
           ;
 
-
-note : notename duration                                                                  { $$ = new Note($1, nullptr, $2, nullptr); }
-     | notename duration dotted                                                           { $$ = new Note($1, nullptr, $2, $3); }   
-     | notename alteration duration                                                       { $$ = new Note($1, $2, $3, nullptr); }  
-     | notename alteration duration dotted                                                { $$ = new Note($1, $2, $3, $4); }  
+note : notename duration                                                                 { $$ = new Note($1, nullptr, $2, nullptr); }
+     | notename duration dotted                                                          { $$ = new Note($1, nullptr, $2, $3); }   
+     | notename alteration duration                                                      { $$ = new Note($1, $2, $3, nullptr); }  
+     | notename alteration duration dotted                                               { $$ = new Note($1, $2, $3, $4); }  
      ;
 
-notename  : TOKEN_NOTE                                                                    { $$ = new Value(yytext);}
-          | TOKEN_REST                                                                    { $$ = new Value(yytext);}
+notename  : TOKEN_NOTE                                                                   { $$ = new Value(yytext);}
+          | TOKEN_REST                                                                   { $$ = new Value(yytext);}
           ;
 
-duration : TOKEN_DURATION                                                                 { $$ = new Value(yytext);}                    
+duration : TOKEN_DURATION                                                                { $$ = new Value(yytext);}                    
           ;
 
-alteration :TOKEN_ALTERATION                                                              { $$ = new Value(yytext);}                    
+alteration :TOKEN_ALTERATION                                                             { $$ = new Value(yytext);}                    
           ;
 
-dotted : TOKEN_DOTTED                                                                     { $$ = new Value(yytext);}                    
-          ;
-
-time : TOKEN_TIME TOKEN_DIGIT TOKEN_SLASH TOKEN_DIGIT                                     { $$ = new Value(std::make_pair($2,$4));}
+dotted : TOKEN_DOTTED                                                                    { $$ = new Value(yytext);}                    
+        ;
+        
+body : statement                                                                        { $$ = $1; }
      ;
-
 %%
 
 int yyerror(const char* s)

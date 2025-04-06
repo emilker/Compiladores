@@ -112,3 +112,28 @@ void Value::destroy() noexcept
 {
 }
 
+Time::Time(Statement *tiempo_, Statement *figure_, Statement *body_) noexcept
+    :  tiempo{tiempo_}, figure{figure_}, body{body_}  {}
+
+void Time::mostrar() noexcept
+{
+    if (tiempo)
+    {
+        tiempo->mostrar();
+    }
+
+    if (figure)
+    {
+        figure->mostrar();
+    }
+
+    if (body)
+    {
+        body->mostrar();
+    }
+}
+
+void Time::destroy() noexcept
+{
+
+}

@@ -34,8 +34,8 @@ int main(int argc, char* argv[])
     if (result == 0)
     {
         std::cout << "Parse successful!\n" << std::endl;
-        parser_result->mostrar();
-        parser_result->destroy();
+        //parser_result->mostrar();
+       // parser_result->destroy();
     }
     else
     {
