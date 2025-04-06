@@ -42,10 +42,10 @@ Statement* parser_result{nullptr};
 program : statement                                                                     { parser_result = $1; }
         ;                                              
 statement : compasses statement                                                         { $$ = new StatementSequence($1, $2); }
-          | secction statement                                                          { $$ = new StatementSequence($1, $2); }
+          | section statement                                                          { $$ = new StatementSequence($1, $2); }
           | time statement                                                              { $$ = new StatementSequence($1, $2); }
           | id statement                                                                { $$ = new StatementSequence($1, $2); }
-          | secction                                                                    { $$ = $1; }
+          | section                                                                    { $$ = $1; }
           | id                                                                          { $$ = $1; }
           | time                                                                        { $$ = $1; }
           | compasses                                                                   { $$ = $1; }
@@ -54,7 +54,7 @@ statement : compasses statement                                                 
 time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE                 { $$ = new Time($2, $4, $6); }
      ;
 
-secction :  TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                        { $$ = new SectionDeclaration($2, $4); }
+section  :  TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                        { $$ = new SectionDeclaration($2, $4); }
          |  TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                      { $$ = new SectionDeclaration($2, $4); }
          ; 
 
@@ -64,8 +64,8 @@ digit : TOKEN_DIGIT                                                             
 id : TOKEN_IDENTIFIER                                                                   { $$ = new Value(yytext); }                                  
          ;
 
-compasses : compasses TOKEN_COMMA note                                                  { $$ = new CompassesComma($1, $3); }                           
-          | compasses TOKEN_BAR_LINE note                                               { $$ = new CompassesBarLine($1, $3); }
+compasses : compasses TOKEN_COMMA note                                                  { $$ = new MeasureStatement($1, $3); }                           
+          | compasses TOKEN_BAR_LINE note                                               { $$ = new MeasureStatement($1, $3); }
           | note                                                                        { $$ = $1; }  
           ;
 

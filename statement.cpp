@@ -12,10 +12,10 @@ Statement::~Statement()
 StatementSequence::StatementSequence(Statement *f, Statement *n) noexcept
     : first(f), next(n) {}
 
-void StatementSequence::mostrar() noexcept
+void StatementSequence::print() noexcept
 {
-    first->mostrar();
-    next->mostrar();
+    first->print();
+    next->print();
 }
 
 void StatementSequence::destroy() noexcept
@@ -44,26 +44,26 @@ void Compasses::destroy() noexcept
 Note::Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_) noexcept
     : note{note_}, alteration{alteration_}, duration{duration_}, dottes{dottes_}  {}
 
-void Note::mostrar()  noexcept
+void Note::print()  noexcept
 {
     if (note)
     {
-        note->mostrar();
+        note->print();
     }
 
     if (alteration)
     {
-        alteration->mostrar();
+        alteration->print();
     }
 
     if (duration)
     {
-        duration->mostrar();
+        duration->print();
     }
     
     if (dottes)
     {
-        dottes->mostrar();
+        dottes->print();
     }
 }
 
@@ -81,7 +81,7 @@ void Note::destroy() noexcept
 SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _compass) noexcept
  : id{_id}, compass{_compass}{}
 
-void SectionDeclaration::mostrar() noexcept
+void SectionDeclaration::print() noexcept
 {
 }
 
@@ -89,22 +89,16 @@ void SectionDeclaration::destroy() noexcept
 {
 }
 
-void CompassesBarLine::mostrar()  noexcept
+void MeasureStatement::print()  noexcept
 {
-    left_Statement->mostrar();
-    right_Statement->mostrar();
-}
-
-void CompassesComma::mostrar()  noexcept
-{
-    left_Statement->mostrar();
-    right_Statement->mostrar();
+    left_Statement->print();
+    right_Statement->print();
 }
 
 Value::Value(std::string v) noexcept
     : value{v}{}
 
-void Value::mostrar()  noexcept
+void Value::print()  noexcept
 {
     std::cout << value << std::endl;
 }
@@ -112,24 +106,24 @@ void Value::destroy() noexcept
 {
 }
 
-Time::Time(Statement *tiempo_, Statement *figure_, Statement *body_) noexcept
-    :  tiempo{tiempo_}, figure{figure_}, body{body_}  {}
+Time::Time(Statement *pulse_, Statement *figure_, Statement *body_) noexcept
+    :  pulse{pulse_}, figure{figure_}, body{body_}  {}
 
-void Time::mostrar() noexcept
+void Time::print() noexcept
 {
-    if (tiempo)
+    if (pulse)
     {
-        tiempo->mostrar();
+        pulse->print();
     }
 
     if (figure)
     {
-        figure->mostrar();
+        figure->print();
     }
 
     if (body)
     {
-        body->mostrar();
+        body->print();
     }
 }
 

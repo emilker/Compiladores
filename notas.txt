@@ -1,40 +1,17 @@
+time 3/4
+{
+	repeat 2 {
+	    G4 q., A4 e, G4 q | E4 h. 
+	}
 
-- q, C4#q., E4 q, F4 q | G4 h, A4 q, G4 q
+	D5 h, D5 q | B4 h.        
+	C5 h, C5 q | G4 h.      
 
-section Jesus {
-    F4 w, E4 e, D4 s, C4 q | G4 h, F4 q, E4 q
-}
+	repeat 2 {
+	    A4 h, A4 q | C5 q., B4 e, A4 q | G4 q., A4 e, G4 q | E4 h.   
+	}
 
-repeat 2 {
-    - q, C4#q., E4 q, F4 q | G4 h, A4 q, G4 q
-}
+	D5 h, D5 q | F5 q., D5 e, B4 q | C5 e.| E5 h. 
 
-- q, C4#q., E4 q, F4 q | G4 h, A4 q, G4 q
-
-Jesus
-
-- q, C4#q., E4 q, F4 q
-
-time 4/4 {
-
-    - q, C4#q., E4 q, F4 q | G4 h, A4 q, G4 q
-
-        time 4/4 {
-            
-            time 4/4
-            {
-                - q, C4#q., E4 q, F4 q | G4 h, A4 q, G4 q
-            }
-            
-        }
-
-        Jesus
-        
-        repeat 2 {
-            - q, C4#q., E4 q, F4 q | G4 h, A4 q, G4 q
-        }  
-
-        section Jesus {
-            F4 w, E4 e, D4 s, C4 q | G4 h, F4 q, E4 q
-        }
+	C5 q., G4 e, E4 q | G4 q., F4 e, D4 e | C3 h. | C3 h.	
 }
