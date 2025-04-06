@@ -42,24 +42,50 @@ Statement* parser_result{nullptr};
 
 
 %%
-program : statement                                                   { parser_result = $1; }
+program : statement                                                                     { parser_result = $1; }
         ;                                              
-statement : compasses statement                                       { $$ = new StatementSequence($1, $2); }
-          | compasses                                                 { $$ = $1; }
+statement : compasses statement                                                         { $$ = new StatementSequence($1, $2); }
+          | secction statement 
+          | secction
+          | compasses                                                                   { $$ = $1; }
+          ;          
+          
+
+secction :  TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                        { $$ = new SectionDeclaration($2, $4); }
+         |  TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                      { $$ = new SectionDeclaration($2, $4); }
+         ; 
+
+digit : TOKEN_DIGIT                                                                     { $$ = new Value(yytext); }
+      ;
+      
+id : TOKEN_IDENTIFIER                                                                   { $$ = new Value(yytext); }                                  
+         ;
+
+compasses : compasses TOKEN_COMMA note                                                  { $$ = new CompassesComma($1, $3); }                           
+          | compasses TOKEN_BAR_LINE note                                               { $$ = new CompassesBarLine($1, $3); }
+          | note                                                                        { $$ = $1; }  
           ;
 
-compasses : compasses TOKEN_COMMA note                                { $$ = new CompassesComma($1, $3); }                           
-          | compasses TOKEN_BAR_LINE note                             { $$ = new CompassesBarLine($1, $3); }
-          | note                                                      { $$ = $1; }  
-          ;
 
-
-note : TOKEN_NOTE TOKEN_DURATION                                      { $$ = new SimpleNote("hola", "jesus"); }
-     | TOKEN_NOTE TOKEN_DURATION TOKEN_DOTTED                         { $$ = new DottedNote(std::string(yytext), std::string(yytext), std::string(yytext)); } 
-     | TOKEN_REST TOKEN_DURATION                                      { $$ = new SimpleNote(std::string(yytext), std::string(yytext)); }  
-     | TOKEN_NOTE TOKEN_ALTERATION TOKEN_DURATION                     { $$ = new AlteredNote(std::string(yytext), std::string(yytext), std::string(yytext)); }  
-     | TOKEN_NOTE TOKEN_ALTERATION TOKEN_DURATION TOKEN_DOTTED        { $$ = new AlteredDottedNote(std::string(yytext), std::string(yytext), std::string(yytext), std::string(yytext)); }  
+note : notename duration                                                                  { $$ = new Note($1, nullptr, $2, nullptr); }
+     | notename duration dotted                                                           { $$ = new Note($1, nullptr, $2, $3); }   
+     | notename alteration duration                                                       { $$ = new Note($1, $2, $3, nullptr); }  
+     | notename alteration duration dotted                                                { $$ = new Note($1, $2, $3, $4); }  
      ;
+
+notename  : TOKEN_NOTE                                                                    { $$ = new Value(yytext);}
+          | TOKEN_REST                                                                    { $$ = new Value(yytext);}
+          ;
+
+duration : TOKEN_DURATION                                                                 { $$ = new Value(yytext);}                    
+          ;
+
+alteration :TOKEN_ALTERATION                                                              { $$ = new Value(yytext);}                    
+          ;
+
+dotted : TOKEN_DOTTED                                                                     { $$ = new Value(yytext);}                    
+          ;
+
 %%
 
 int yyerror(const char* s)

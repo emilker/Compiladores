@@ -1,11 +1,9 @@
 %{
 #include "token.h"
-#include <string>
-#include "statement.hpp"  // Necesario para Statement
-%}
+%} 
 
 SPACE        [ \t\n\r]
-DIGIT        [1-8]
+DIGIT        [2-99]
 LETTER       [A-Za-z]
 NOTE         [A-G][1-8]?
 ALTERATION   [#bn] 

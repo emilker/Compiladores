@@ -1,2 +1,26 @@
 
-    F4 w, E4 e, D4 s, C4 q | G4 h, F4 q, E4 q
+repeat 10 {
+    E4 q, C4 q, E4 q, F4 q | G4 h, A4 q, G4 q
+}
+
+
+time 4/4
+{
+  time 6/8
+    {
+        
+        E4 q, C4 q, E4 q, F4 q | G4 h, A4 q, G4 q
+    }
+
+    time 2/8
+    {
+        time 3/6
+        {
+            
+        }
+    }
+}
+
+
+
+time 19/8

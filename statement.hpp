@@ -16,10 +16,13 @@ public:
     //virtual std::string to_string()  noexcept = 0;
 };
 
-class SimpleNote : public Statement
+
+
+
+class Note : public Statement
 {  
 public:
-    SimpleNote(const std::string& n, const std::string& d) noexcept;
+    Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_) noexcept;
     
     void mostrar()  noexcept;
     
@@ -29,52 +32,26 @@ public:
   
     //  std::string to_string()  noexcept override;
 private:
-    std::string note;
-    std::string duration;
+    Statement* note;
+    Statement* duration;
+    Statement* dottes;
+    Statement* alteration;  
 };
 
-class DottedNote : public Statement
+class SectionDeclaration : public Statement
 {
 public:
-    DottedNote(const std::string& n, const std::string& du, const std::string& dt) noexcept;
-
+    SectionDeclaration(Statement* id,Statement* compass) noexcept;
+   
     void mostrar()  noexcept;
-
-    void destroy() noexcept override;
-private:
-    std::string note;
-    std::string duration;
-    std::string dotted;
-};
-
-class AlteredNote : public Statement
-{
-public:
-    AlteredNote(const std::string& n, const std::string& al, const std::string& du ) noexcept;
     
-    void mostrar()  noexcept;
-
     void destroy() noexcept override;
-private: 
-    std::string note;
-    std::string alteration;
-    std::string duration;           
-};
 
-class AlteredDottedNote : public Statement
-{       
-public:
-    AlteredDottedNote(const std::string& n, const std::string& al, const std::string& du, const std::string& dt) noexcept;
-
-    void mostrar()  noexcept;
-
-    void destroy() noexcept override;
 private:
-    std::string note;
-    std::string alteration;
-    std::string duration;
-    std::string dotted;
+    Statement* id;
+    Statement* compass;
 };
+
 class StatementSequence : public Statement 
 {
 public:
@@ -124,4 +101,17 @@ public:
 
     //  std::string operand_str()  noexcept override;
  
+};
+
+class Value: public Statement
+{
+public:
+    Value(std::string v) noexcept;
+
+    void mostrar()  noexcept override;
+
+    void destroy() noexcept override;
+
+private:
+    std::string value;
 };

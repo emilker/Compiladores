@@ -14,7 +14,6 @@ StatementSequence::StatementSequence(Statement *f, Statement *n) noexcept
 
 void StatementSequence::mostrar() noexcept
 {
-    std::cout << "StatementSequence\n";
     first->mostrar();
     next->mostrar();
 }
@@ -42,55 +41,74 @@ void Compasses::destroy() noexcept
     right_Statement = nullptr;
 }
 
-SimpleNote::SimpleNote(const std::string& n,const std::string& d) noexcept
-    : note{n},duration{d}  {}
+Note::Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_) noexcept
+    : note{note_}, alteration{alteration_}, duration{duration_}, dottes{dottes_}  {}
 
-void SimpleNote::mostrar()  noexcept
+void Note::mostrar()  noexcept
 {
-    std::cout<<"SimpleNote\n"<<note<<std::endl;
-    std::cout<<"SimpleNote\n"<<duration<<std::endl;
+    if (note)
+    {
+        note->mostrar();
+    }
+
+    if (alteration)
+    {
+        alteration->mostrar();
+    }
+
+    if (duration)
+    {
+        duration->mostrar();
+    }
+    
+    if (dottes)
+    {
+        dottes->mostrar();
+    }
 }
 
-void SimpleNote::destroy() noexcept {}
+void Note::destroy() noexcept
+{
+    delete note;
+    delete alteration;
+    delete duration;
+    delete dottes;
+    note = nullptr;
+    alteration = nullptr;
+    dottes = nullptr;
+}
 
-DottedNote::DottedNote(const std::string& n, const std::string& du, const std::string& dt) noexcept
-    : note{n}, duration{du}, dotted{dt}  {}
+SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _compass) noexcept
+ : id{_id}, compass{_compass}{}
 
-void DottedNote::mostrar()  noexcept
+void SectionDeclaration::mostrar() noexcept
 {
 }
 
-void DottedNote::destroy() noexcept {}
-
-AlteredNote::AlteredNote(const std::string &n, const std::string &al, const std::string &du) noexcept
-    : note{n}, alteration{al}, duration{du} {}
-
-
-    void AlteredNote::mostrar()  noexcept
+void SectionDeclaration::destroy() noexcept
 {
 }
-
-void AlteredNote::destroy() noexcept {}
-
-AlteredDottedNote::AlteredDottedNote(const std::string &n, const std::string &al, const std::string &du, const std::string& dt) noexcept
-    : note{n}, alteration{al}, duration{du}, dotted{dt}  {}
-
-void AlteredDottedNote::mostrar()  noexcept
-{
-}
-
-void AlteredDottedNote::destroy() noexcept {}
 
 void CompassesBarLine::mostrar()  noexcept
 {
-    std::cout << "CompassesBarLine\n";
     left_Statement->mostrar();
     right_Statement->mostrar();
 }
 
 void CompassesComma::mostrar()  noexcept
 {
-    std::cout << "CompassesComma\n";
     left_Statement->mostrar();
     right_Statement->mostrar();
 }
+
+Value::Value(std::string v) noexcept
+    : value{v} {}
+
+void Value::mostrar()  noexcept
+{
+    std::cout << value << std::endl;
+}
+void Value::destroy() noexcept
+{
+}
+
