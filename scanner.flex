@@ -6,7 +6,7 @@ SPACE        [ \t\n\r]
 DIGIT        [2-99]
 LETTER       [A-Za-z]
 NOTE         [A-G][1-8]?
-ALTERATION   [#bn] 
+ALTERATION   [#b] 
 DURATION     [qhesw]
 TIME         "time"
 SECTION      "section"
