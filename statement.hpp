@@ -2,6 +2,7 @@
 
 #include <string>
 #include <utility> 
+//#include "symbol_table.hpp"
 
 class Statement
 {
@@ -12,6 +13,8 @@ public:
 
     virtual void print()  noexcept = 0;
 
+    virtual std::string get_value() noexcept = 0; 
+
 };
 
 class Time : public Statement
@@ -20,6 +23,8 @@ public:
     Time(Statement* pulse_, Statement* figure_, Statement* body_) noexcept;
     
     void print()  noexcept;
+
+    std::string get_value() noexcept override { return ""; } // Implementar según sea necesario    
     
     void destroy() noexcept override;
 
@@ -35,6 +40,8 @@ public:
     Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_) noexcept;
     
     void print()  noexcept;
+
+    std::string get_value() noexcept override { return ""; } // Implementar según sea necesario
     
     void destroy() noexcept override;
 
@@ -51,6 +58,8 @@ public:
     SectionDeclaration(Statement* id,Statement* compass) noexcept;
    
     void print()  noexcept;
+
+    std::string get_value() noexcept override { return ""; } // Implementar según sea necesario
     
     void destroy() noexcept override;
 
@@ -66,6 +75,8 @@ public:
 
     void print()  noexcept;
 
+    std::string get_value() noexcept override { return ""; } // Implementar según sea necesario
+
     void destroy() noexcept override;
         
 private:
@@ -78,6 +89,8 @@ public:
     Compasses(Statement* c1, Statement* c2) noexcept;
     
     void destroy() noexcept override;
+
+
 protected:
     Statement* left_Statement;
     Statement* right_Statement;
@@ -91,12 +104,16 @@ public:
 
     void print()  noexcept override;
 
+    std::string get_value() noexcept override { return ""; } // Implementar según sea necesario
+
 };
 
 class Value: public Statement
 {
 public:
     Value(std::string v) noexcept;
+
+    std::string get_value() noexcept; 
 
     void print()  noexcept override;
 

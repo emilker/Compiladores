@@ -3,6 +3,9 @@
 #include <statement.hpp>
 #include <string> 
 
+#include "symbol_table.hpp"
+SymbolTable symbolTable;  // Tabla de símbolos global
+
 #define YYSTYPE Statement*
 
 extern int yylex();
@@ -42,51 +45,65 @@ Statement* parser_result{nullptr};
 program : statement                                                                     { parser_result = $1; }
         ;                                              
 statement : compasses statement                                                         { $$ = new StatementSequence($1, $2); }
-          | section statement                                                          { $$ = new StatementSequence($1, $2); }
+          | section statement                                                           { $$ = new StatementSequence($1, $2); }
           | time statement                                                              { $$ = new StatementSequence($1, $2); }
-          | id statement                                                                { $$ = new StatementSequence($1, $2); }
-          | section                                                                    { $$ = $1; }
-          | id                                                                          { $$ = $1; }
+          | idReference statement                                                       { $$ = new StatementSequence($1, $2); }
+          | section                                                                     { $$ = $1; }
+          | idReference                                                                 { $$ = $1; }
           | time                                                                        { $$ = $1; }
           | compasses                                                                   { $$ = $1; }
-
           ;          
-time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE                 { $$ = new Time($2, $4, $6); }
+
+time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE                { $$ = new Time($2, $4, $6); }
      ;
 
-section  :  TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                        { $$ = new SectionDeclaration($2, $4); }
-         |  TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                      { $$ = new SectionDeclaration($2, $4); }
+section  :  TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                        {      Value* idValue = dynamic_cast<Value*>($2);
+                                                                                               std::string id = idValue->get_value(); 
+                                                                                               //std::cout << id <<std::endl; 
+                                                                                               if (!symbolTable.bind(id, $4)) 
+                                                                                               {
+                                                                                                    yyerror("Sección duplicada");
+                                                                                                    YYERROR;
+                                                                                               }
+                                                                                         
+                                                                                        }
+          |  TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                      { $$ = new SectionDeclaration($2, $4); }
          ; 
 
 digit : TOKEN_DIGIT                                                                     { $$ = new Value(yytext); }
       ;
       
 id : TOKEN_IDENTIFIER                                                                   { $$ = new Value(yytext); }                                  
-         ;
+   ;
+
+idReference : TOKEN_IDENTIFIER                                                          {   auto ref = symbolTable.lookup(yytext); 
+                                                                                            $$ = ref->body; 
+                                                                                        }                                  
+   ;
 
 compasses : compasses TOKEN_COMMA note                                                  { $$ = new MeasureStatement($1, $3); }                           
           | compasses TOKEN_BAR_LINE note                                               { $$ = new MeasureStatement($1, $3); }
           | note                                                                        { $$ = $1; }  
           ;
 
-note : notename duration                                                                 { $$ = new Note($1, nullptr, $2, nullptr); }
-     | notename duration dotted                                                          { $$ = new Note($1, nullptr, $2, $3); }   
-     | notename alteration duration                                                      { $$ = new Note($1, $2, $3, nullptr); }  
-     | notename alteration duration dotted                                               { $$ = new Note($1, $2, $3, $4); }  
+note : notename duration                                                                { $$ = new Note($1, nullptr, $2, nullptr); }
+     | notename duration dotted                                                         { $$ = new Note($1, nullptr, $2, $3); }   
+     | notename alteration duration                                                     { $$ = new Note($1, $2, $3, nullptr); }  
+     | notename alteration duration dotted                                              { $$ = new Note($1, $2, $3, $4); }  
      ;
 
-notename  : TOKEN_NOTE                                                                   { $$ = new Value(yytext);}
-          | TOKEN_REST                                                                   { $$ = new Value(yytext);}
+notename  : TOKEN_NOTE                                                                  { $$ = new Value(yytext);}
+          | TOKEN_REST                                                                  { $$ = new Value(yytext);}
           ;
 
-duration : TOKEN_DURATION                                                                { $$ = new Value(yytext);}                    
-          ;
+duration : TOKEN_DURATION                                                               { $$ = new Value(yytext);}                    
+         ;
 
-alteration :TOKEN_ALTERATION                                                             { $$ = new Value(yytext);}                    
-          ;
+alteration : TOKEN_ALTERATION                                                           { $$ = new Value(yytext);}                    
+           ;
 
-dotted : TOKEN_DOTTED                                                                    { $$ = new Value(yytext);}                    
-        ;
+dotted : TOKEN_DOTTED                                                                   { $$ = new Value(yytext);}                    
+       ;
         
 body : statement                                                                        { $$ = $1; }
      ;

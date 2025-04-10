@@ -98,6 +98,11 @@ void MeasureStatement::print()  noexcept
 Value::Value(std::string v) noexcept
     : value{v}{}
 
+std::string Value::get_value() noexcept
+{
+    return value;
+}
+
 void Value::print()  noexcept
 {
     std::cout << value << std::endl;
@@ -131,3 +136,20 @@ void Time::destroy() noexcept
 {
 
 }
+/*
+SectionReference::SectionReference(std::string id) noexcept
+    : id{id}  {}
+
+void SectionReference::semantic_analysisk(SymbolTable& symtab) noexcept
+{
+    resolved = symtab.lookup(id);
+
+    if(!resolved) {
+        throw std::runtime_error("Sección no definida: " + id);
+    }
+}
+
+void SectionReference::destroy() noexcept
+{
+}
+*/

@@ -1,17 +1,18 @@
-time 3/4
-{
-	repeat 2 {
+section jeus {
 	    G4 q., A4 e, G4 q | E4 h. 
-	}
-
-	D5 h, D5 q | B4 h.        
-	C5 h, C5 q | G4 h.      
-
-	repeat 2 {
-	    A4 h, A4 q | C5 q., B4 e, A4 q | G4 q., A4 e, G4 q | E4 h.   
-	}
-
-	D5 h, D5 q | F5 q., D5 e, B4 q | C5 e.| E5 h. 
-
-	C5 q., G4 e, E4 q | G4 q., F4 e, D4 e | C3 h. | C3 h.	
 }
+
+section jesus {
+	    G4 q., G4 q | E4 h. 
+}
+
+
+repeat 2 {
+	    G4 q., G4 q | E4 h. 
+}
+
+jesus
+
+jesus
+
+jesus
