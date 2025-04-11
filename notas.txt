@@ -1,18 +1,15 @@
 
-section jesus {
+section prueba{
 	    G4 q., G4 q | E4 h. 
 
 }
 
-repeat 2{
+repeat 2 {
 	    G4 q., G4 q | E4 h. 
 }
 
+section prueba{
+	    G4 q., G4 q | E4 h. 
 
+}
 
-jesus
-
-jesus
-
-jesus
-	G4 q., A4 e, G4 q | E4 h. 

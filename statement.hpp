@@ -182,6 +182,8 @@ class RepeatDeclaration : public Statement {
         void print() noexcept override;
         
         std::string get_value() noexcept override { return ""; } 
+
+        float pulse() noexcept override { return 0.0f; } // Implementar según sea necesario
         
         void destroy() noexcept override;
     
