@@ -4,22 +4,22 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
-#include "statement.hpp"  // Asumo que tienes tus clases AST aquí
 
+class Statement; // Declaración anticipada de la clase Statement
 class Symbol {
 public:
-    std::string name;        // Nombre de la sección musical (ej. "intro", "estrofa")
-    Statement* body;         // Puntero al AST que contiene las notas/compases de la sección
-    int beatsPerMeasure;     // Numerador de la firma de compás (por defecto 4)
-    int beatValue;           // Denominador de la firma de compás (por defecto 4 = negra)
+    std::string name;          // Nombre de la sección musical (ej. "intro", "estrofa")
+    Statement* body;          // Puntero al AST que contiene las notas/compases de la sección
+    int pulse;               // Numerador de la firma de compás (por defecto 4)
+    int figure;             // Denominador de la firma de compás (por defecto 4 = negra)
         
     // Método factory para crear instancias compartidas
     static std::shared_ptr<Symbol> Build(std::string_view name, Statement* body) {
         return std::make_shared<Symbol>(name, body); // Crea un shared_ptr con nuevo Symbol
     }
         
-        // Constructor que inicializa los miembros
-    Symbol(std::string_view name, Statement* body) : name(name),body(body),beatsPerMeasure(4),beatValue(4) {}      // (compás común)
+    // Constructor que inicializa los miembros
+    Symbol(std::string_view name, Statement* body) : name(name),body(body),pulse(4),figure(4) {}      // (compás común)
 };
 
 class SymbolTable {
@@ -95,14 +95,14 @@ private:
             "juses" => shared_ptr<Symbol> {
                 name: "juses",
                 body: StatementSequence(...), // Contiene las notas
-                beatsPerMeasure: 4,
-                beatValue: 4
+                pulse: 4,
+                figure: 4
             },
             "jesus" => shared_ptr<Symbol> {
                 name: "jesus",
                 body: StatementSequence(...), // Contiene sus notas
-                beatsPerMeasure: 4,
-                beatValue: 4
+                pulse: 4,
+                figure: 4
             }
         }
     ]
