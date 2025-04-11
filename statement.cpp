@@ -41,6 +41,57 @@ void Compasses::destroy() noexcept
     right_Statement = nullptr;
 }
 
+
+void CompassesBarLine::print() noexcept
+{
+   std::cout << left_Statement->get_value() << " | " << right_Statement->get_value() << std::endl;
+}
+
+float CompassesBarLine::pulse() noexcept
+{
+    left_pulse += left_Statement->pulse();
+    right_pulse += right_Statement->pulse();
+
+    if (left_pulse != right_pulse){
+        std::cout << "left_pulse: " << left_pulse << std::endl;
+        std::cout << "right_pulse: " << right_pulse << std::endl;
+        std::cerr << "Error: Pulsos desiguales en CompassesBarLine" << std::endl;
+        return 0.0f; // O lanza una excepción más descriptiva
+     }
+    return left_pulse;
+}
+
+float CompassesBarLine::calculate_figure() noexcept
+{  
+    return 0.0f;
+}
+
+void CompassesBarLine::destroy() noexcept
+{
+}
+
+void CompassesComma::print() noexcept
+{
+}
+
+void CompassesComma::destroy() noexcept
+{
+}
+
+std::string CompassesComma::get_value() noexcept
+{
+    return left_Statement->get_value() + " , " + right_Statement->get_value();
+}
+
+float CompassesComma::pulse() noexcept
+{
+    if(left_Statement) left_pulse += left_Statement->pulse();
+
+    if(right_Statement) right_pulse += right_Statement->pulse();
+
+    return left_pulse + right_pulse;
+}
+
 Note::Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_) noexcept
     : note{note_}, alteration{alteration_}, duration{duration_}, dottes{dottes_}  {}
 
@@ -141,61 +192,4 @@ void SectionReference::print() noexcept
 
 void SectionReference::destroy() noexcept
 {
-}
-
-void CompassesBarLine::print() noexcept
-{
-   std::cout << left_Statement->get_value() << " | " << right_Statement->get_value() << std::endl;
-}
-
-float CompassesBarLine::pulse() noexcept
-{
-    left_pulse += left_Statement->pulse();
-    right_pulse += right_Statement->pulse();
-
-    if (left_pulse != right_pulse){
-        std::cout << "left_pulse: " << left_pulse << std::endl;
-        std::cout << "right_pulse: " << right_pulse << std::endl;
-        std::cerr << "Error: Pulsos desiguales en CompassesBarLine" << std::endl;
-        return 0.0f; // O lanza una excepción más descriptiva
-     }
-    return left_pulse;
-}
-
-float CompassesBarLine::calculate_figure() noexcept
-{  
-    return 0.0f;
-}
-
-void CompassesBarLine::destroy() noexcept
-{
-}
-
-void CompassesComma::print() noexcept
-{
-
-}
-
-void CompassesComma::destroy() noexcept
-{
-}
-
-std::string CompassesComma::get_value() noexcept
-{
-    return left_Statement->get_value() + " , " + right_Statement->get_value();
-}
-
-float CompassesComma::pulse() noexcept
-{
-    if(left_Statement)
-    {
-        left_pulse += left_Statement->pulse();
-    }
-
-    if(right_Statement)
-    {
-        right_pulse += right_Statement->pulse();
-    }
-    return left_pulse + right_pulse;
-    
 }
