@@ -57,22 +57,17 @@ statement : compasses statement                                                 
 time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE                { $$ = new Time($2, $4, $6); }
      ;
 
-section  :  TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                        {      Value* idValue = dynamic_cast<Value*>($2);
-                                                                                               std::string id = idValue->get_value(); 
-                                                                                               //std::cout << id <<std::endl; 
+section : TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                          {     
+                                                                                               Value* idValue = dynamic_cast<Value*>($2);
+                                                                                               std::string id = idValue->get_value();  
                                                                                                if (!symbolTable.bind(id, $4)) 
                                                                                                {
                                                                                                     yyerror("Sección duplicada");
                                                                                                     YYERROR;
                                                                                                }
                                                                                          
-                                                                                        }
-          | TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                        {
-                                                                                               Value* repeatValue = dynamic_cast<Value*>($2);
-                                                                                               int count = std::stoi(repeatValue->get_value());
-                                                                                               $$ = new RepeatDeclaration(count, $4); 
-                                                                                          }
-
+                                                                                        }        
+         ; 
 
 digit : TOKEN_DIGIT                                                                     { $$ = new Value(yytext); }
       ;
@@ -80,15 +75,20 @@ digit : TOKEN_DIGIT                                                             
 id : TOKEN_IDENTIFIER                                                                   { $$ = new Value(yytext); }                                  
    ;
 
-idReference : TOKEN_IDENTIFIER                                                          {   auto ref = symbolTable.lookup(yytext); 
-                                                                                            $$ = ref->body; 
+idReference : TOKEN_IDENTIFIER                                                          {   /*auto ref = symbolTable.lookup(yytext); 
+                                                                                            $$ = ref->body;*/
+                                                                                           auto ID = new SectionReference(yytext,symbolTable);
+                                                                                           $$ = ID->semantic_analysis();
                                                                                         }                                  
-   ;
+            ;
 
-compasses : compasses TOKEN_COMMA note                                                  { $$ = new MeasureStatement($1, $3); }                           
-          | compasses TOKEN_BAR_LINE note                                               { $$ = new MeasureStatement($1, $3); }
-          | note                                                                        { $$ = $1; }  
+compasses : compasses TOKEN_BAR_LINE notes                                              { $$ = new CompassesBarLine($1, $3); }
+          |  notes                                                                      { $$ = $1; }
           ;
+
+notes: notes TOKEN_COMMA note                                                           { $$ = new CompassesComma($1, $3); }
+     | note                                                                             { $$ = $1; } 
+     ;   
 
 note : notename duration                                                                { $$ = new Note($1, nullptr, $2, nullptr); }
      | notename duration dotted                                                         { $$ = new Note($1, nullptr, $2, $3); }   
