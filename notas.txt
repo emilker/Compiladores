@@ -4,12 +4,14 @@ section jeus {
 
 section jesus {
 	    G4 q., G4 q | E4 h. 
+
 }
 
-
-repeat 2 {
+repeat 2{
 	    G4 q., G4 q | E4 h. 
 }
+
+
 
 jesus
 

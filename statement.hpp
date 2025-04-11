@@ -122,3 +122,20 @@ public:
 private:
     std::string value;
 };
+
+class RepeatDeclaration : public Statement {
+    public:
+        RepeatDeclaration(int count, Statement* body) noexcept;
+        void print() noexcept override;
+        
+        std::string get_value() noexcept override { return ""; } 
+        
+        void destroy() noexcept override;
+    
+    private:
+        
+        int repeat_count;
+        
+        Statement* body;
+    };
+    

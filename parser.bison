@@ -67,8 +67,12 @@ section  :  TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                
                                                                                                }
                                                                                          
                                                                                         }
-          |  TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                      { $$ = new SectionDeclaration($2, $4); }
-         ; 
+          | TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                        {
+                                                                                               Value* repeatValue = dynamic_cast<Value*>($2);
+                                                                                               int count = std::stoi(repeatValue->get_value());
+                                                                                               $$ = new RepeatDeclaration(count, $4); 
+                                                                                          }
+
 
 digit : TOKEN_DIGIT                                                                     { $$ = new Value(yytext); }
       ;

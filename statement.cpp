@@ -153,3 +153,18 @@ void SectionReference::destroy() noexcept
 {
 }
 */
+
+RepeatDeclaration::RepeatDeclaration(int count, Statement* body) noexcept
+    : repeat_count(count), body(body) {}
+
+void RepeatDeclaration::print() noexcept {
+        for (int i = 0; i < repeat_count; ++i) {
+            if (body) body->print();  
+        }
+}
+    
+
+void RepeatDeclaration::destroy() noexcept {
+
+}
+
