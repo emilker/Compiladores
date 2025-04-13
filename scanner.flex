@@ -1,9 +1,10 @@
 %{
 #include "token.h"
-%} 
+%}
 
+/* Definiciones de expresiones regulares */
 SPACE        [ \t\n\r]
-DIGIT        [2-99]
+DIGIT        [0-9]
 LETTER       [A-Za-z]
 NOTE         [A-G][1-8]?
 ALTERATION   [#b] 
@@ -16,18 +17,17 @@ REST         "-"
 DOTTED       "."
 COMMA        ","
 SEMICOLON    ";"
-LPAREN       "\("
-RPAREN       "\)"
-LBRACKET     "\["
-RBRACKET     "\]"
+LPAREN       "("
+RPAREN       ")"
+LBRACKET     "["
+RBRACKET     "]"
 PIPE         "\\"
 SLASH        "/"
-LBRACE       "\{"
-RBRACE       "\}" 
+LBRACE       "{"
+RBRACE       "}" 
 
 %%
-{SPACE}      {}
-{DIGIT}      { return TOKEN_DIGIT; }
+{SPACE}      { /* ignorar espacios */ }
 {TIME}       { return TOKEN_TIME; }
 {NOTE}       { return TOKEN_NOTE; }
 {ALTERATION} { return TOKEN_ALTERATION; }
@@ -47,11 +47,11 @@ RBRACE       "\}"
 {RBRACE}     { return TOKEN_RBRACE; }
 {BAR_LINE}   { return TOKEN_BAR_LINE; }
 {REST}       { return TOKEN_REST; }
+{DIGIT}+     { return TOKEN_DIGIT; }
 
 {LETTER}({LETTER}|{DIGIT}|_)* { return TOKEN_IDENTIFIER; }
 
 .            { return TOKEN_UNKNOWN; }
-
 %%
 
 int yywrap() { return 1; }

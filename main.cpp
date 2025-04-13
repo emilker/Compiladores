@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     {
         std::cout << "Parse successful!\n" << std::endl;
         parser_result->print();
-        // parser_result->pulse();
+        parser_result->pulse();
         //parser_result->destroy();
     }
     else

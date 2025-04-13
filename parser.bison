@@ -54,18 +54,29 @@ statement : compasses statement                                                 
           | compasses                                                                   { $$ = $1; }
           ;          
 
-time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE                { $$ = new Time($2, $4, $6); }
+time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE                  { 
+                                                                                               try
+                                                                                               {
+                                                                                                    $$ = new Time($2, $4, $6);
+                                                                                               }catch (const std::exception& e) 
+                                                                                               {
+                                                                                                    yyerror(e.what());
+                                                                                                    YYERROR;
+                                                                                               }  
+                                                                                                      
+                                                                                         }
      ;
 
+
 section : TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                          { 
-                                                                                          try 
-                                                                                          {
-                                                                                               $$ = new SectionDeclaration($2, $4, symbolTable); 
-                                                                                          } catch (const std::exception& e) 
-                                                                                          {
-                                                                                               yyerror(e.what());
-                                                                                               YYERROR;
-                                                                                          }
+                                                                                               try 
+                                                                                               {
+                                                                                                    $$ = new SectionDeclaration($2, $4, symbolTable); 
+                                                                                               } catch (const std::exception& e) 
+                                                                                               {
+                                                                                                    yyerror(e.what());
+                                                                                                    YYERROR;
+                                                                                               }
                                                                                         }
         | TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                        {  $$ = new RepeatDeclaration($2, $4); }                                                         
         ; 

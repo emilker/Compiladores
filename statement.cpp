@@ -28,13 +28,20 @@ void StatementSequence::destroy() noexcept
     next = nullptr;
 }
 
-Compasses::Compasses(Statement* c1, Statement* c2) noexcept
-    : left_Statement{c1}, right_Statement{c2}  {}
-
-void Compasses::print() noexcept
-{
-    std::cout << left_Statement->get_value() << "  " << right_Statement->get_value() << std::endl;
+float StatementSequence::pulse() noexcept
+{                          
+    float pulse = 0.0f;
+    if (first) {
+        pulse = first->pulse();
+    }
+    if (next) {
+        pulse = next->pulse();
+    }
+    return pulse;
 }
+
+Compasses::Compasses(Statement* c1, Statement* c2) noexcept
+    : left_Statement{c1}, right_Statement{c2}, left_pulse{0.0f},right_pulse{0.0f}  {}
 
 void Compasses::destroy() noexcept
 {
@@ -46,30 +53,34 @@ void Compasses::destroy() noexcept
     right_Statement = nullptr;
 }
 
-std::string Compasses::get_value() noexcept
-{
-    return left_Statement->get_value() + "  " + right_Statement->get_value();     
-}
-
 void CompassesBarLine::print() noexcept
 {
-   std::cout << left_Statement->get_value() << " | " << right_Statement->get_value() << std::endl;
+   std::cout << left_Statement->get_value() << " |  " << right_Statement->get_value() << std::endl;
 }
+ float CompassesBarLine::pulse() noexcept
+{ 
+    if (left_Statement) 
+    {
+        left_pulse = left_Statement->pulse();
+        //std::cout << " left_pulse: " << left_pulse;
+    }
 
-float CompassesBarLine::pulse() noexcept
-{
-    left_pulse += left_Statement->pulse();
-    right_pulse += right_Statement->pulse();
+    if (right_Statement) 
+    {
+        right_pulse = right_Statement->pulse();
+        //std::cout << " right_pulse: " << right_pulse;
+    }
 
-    if (left_pulse != right_pulse){
-        std::cout << "left_pulse: " << left_pulse << std::endl;
-        std::cout << "right_pulse: " << right_pulse << std::endl;
-        std::cerr << "Error: Pulsos desiguales en CompassesBarLine" << std::endl;
+    if (left_pulse == right_pulse)
+    {
+        //std::cout << " Pulsos iguales en CompassesBarLine" << std::endl;
+        return left_pulse;  
+    } else 
+    {
+       // std::cout << " Pulsos desiguales en CompassesBarLine" << std::endl; 
         return 0.0f; // O lanza una excepción más descriptiva
-     }
-    return left_pulse;
+    }
 }
-
 float CompassesBarLine::calculate_figure() noexcept
 {  
     return 0.0f;
@@ -77,6 +88,12 @@ float CompassesBarLine::calculate_figure() noexcept
 
 void CompassesBarLine::destroy() noexcept
 {
+    left_Statement->destroy();
+    delete left_Statement;
+    left_Statement = nullptr;
+    right_Statement->destroy();
+    delete right_Statement;
+    right_Statement = nullptr;
 }
 
 std::string CompassesBarLine::get_value() noexcept
@@ -84,12 +101,20 @@ std::string CompassesBarLine::get_value() noexcept
     return left_Statement->get_value() + " | " + right_Statement->get_value();
 }
 
-void CompassesComma::print() noexcept
-{
-}
+void CompassesComma::print() noexcept{}
 
 void CompassesComma::destroy() noexcept
 {
+    if (left_Statement) {
+        left_Statement->destroy();
+        delete left_Statement;
+        left_Statement = nullptr;
+    }
+    if (right_Statement) {
+        right_Statement->destroy();
+        delete right_Statement;
+        right_Statement = nullptr;
+    }
 }
 
 std::string CompassesComma::get_value() noexcept
@@ -99,10 +124,8 @@ std::string CompassesComma::get_value() noexcept
 
 float CompassesComma::pulse() noexcept
 {
-    if(left_Statement) left_pulse += left_Statement->pulse();
-
-    if(right_Statement) right_pulse += right_Statement->pulse();
-
+    left_pulse = left_Statement ? left_Statement->pulse() : 0.0f;
+    right_pulse = right_Statement ? right_Statement->pulse() : 0.0f;
     return left_pulse + right_pulse;
 }
 
@@ -137,12 +160,17 @@ float Note::pulse() noexcept
 }
 void Note::destroy() noexcept
 {
+    note->destroy();    
     delete note;
-    delete alteration;
-    delete duration;
-    delete dottes;
     note = nullptr;
+    alteration->destroy();
+    delete alteration;
     alteration = nullptr;
+    duration->destroy();
+    delete duration;
+    duration = nullptr;
+    dottes->destroy();
+    delete dottes;
     dottes = nullptr;
 }
 
@@ -157,12 +185,16 @@ SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _compass, Symb
     }
 }
 
-void SectionDeclaration::print() noexcept
-{
-}
+void SectionDeclaration::print() noexcept{}
 
 void SectionDeclaration::destroy() noexcept
 {
+    id->destroy();
+    delete id;
+    id = nullptr;
+    compass->destroy();
+    delete compass;
+    compass = nullptr;
 }
 
 Value::Value(std::string v) noexcept
@@ -177,22 +209,45 @@ void Value::print()  noexcept
 {
     std::cout << value << std::endl;
 }
-void Value::destroy() noexcept
-{
-}
+void Value::destroy() noexcept {}
 
-Time::Time(Statement *pulse_, Statement *figure_, Statement *body_) noexcept
-    :  Pulse{pulse_}, figure{figure_}, body{body_}  {}
+Time::Time(Statement *pulse_, Statement *figure_, Statement *body_)
+    :  pulse_{pulse_}, figure_{figure_}, body{body_}  
+{
+    int Pulse = std::stoi(pulse_->get_value());
+    int Figure = std::stoi(figure_->get_value());
+
+    static std::unordered_map<int, float> FIGURES = {
+        {1, 4}, {2, 2}, {4, 1}, {8, 0.5}, {16, 0.25}
+    };
+
+    auto it = FIGURES.find(Figure);
+    if(it == FIGURES.end()) {
+        throw std::runtime_error("Figura no válida:");
+    }
+    if ( !(it->second*Pulse) == body->pulse() )
+    {
+        throw std::runtime_error("Pulsos desiguales en Time");
+    }
+
+}
 
 void Time::print() noexcept
 {
-    if (Pulse) Pulse->print();
-    if (figure) figure->print();
     if (body) body->print();
 }
 
 void Time::destroy() noexcept
 {
+    pulse_->destroy();
+    delete pulse_;
+    pulse_ = nullptr;
+    figure_->destroy();
+    delete figure_;
+    figure_ = nullptr;
+    body->destroy();
+    delete body;
+    body = nullptr;
 }
 
 SectionReference::SectionReference(std::string id, SymbolTable& symtab ) noexcept
@@ -214,15 +269,25 @@ void SectionReference::print() noexcept
 {
     auto resolved = symtab.lookup(id);
 
-    if(!resolved) {
+    if(!resolved) 
+    {
         std::runtime_error("Sección no definida: "s + id);
         return; // O lanza una excepción más descriptiva
     }
     resolved->body->print(); // Imprime el cuerpo de la sección referenciada
 }
 
-void SectionReference::destroy() noexcept
+void SectionReference::destroy() noexcept{}
+
+float SectionReference::pulse() noexcept
 {
+    auto resolved = symtab.lookup(id);
+
+    if(!resolved) 
+    {
+        return 0.0; // O lanza una excepción más descriptiva
+    }
+    return resolved->body->pulse(); // Imprime el cuerpo de la sección referenciada
 }
 
 RepeatDeclaration::RepeatDeclaration(Statement* count, Statement* body) noexcept
@@ -234,13 +299,27 @@ void RepeatDeclaration::repeat() noexcept
 
 void RepeatDeclaration::print() noexcept {
 
-        int count = std::stoi(repeat_count->get_value());
+    int count = std::stoi(repeat_count->get_value());
 
-        for (int i = 0; i < count; ++i) {
-            if (body) body->print();  
-        }
+    for (int i = 0; i < count; ++i) 
+    {
+        if (body) body->print();  
+    }
 }
 
-void RepeatDeclaration::destroy() noexcept 
+float RepeatDeclaration::pulse() noexcept
 {
+    if(body) {
+        return body->pulse(); // O lanza una excepción más descriptiva
+    }
+}
+
+void RepeatDeclaration::destroy() noexcept
+{
+    repeat_count->destroy();
+    delete repeat_count;
+    repeat_count = nullptr;
+    body->destroy();
+    delete body;
+    body = nullptr;
 }
