@@ -62,7 +62,7 @@ private:
 class SectionDeclaration : public Statement
 {
 public:
-    SectionDeclaration(Statement* id,Statement* compass) noexcept;
+    SectionDeclaration(Statement* id,Statement* compass, SymbolTable& symtab);
    
     void print()  noexcept;
 
@@ -75,6 +75,7 @@ public:
 private:
     Statement* id;
     Statement* compass;
+    SymbolTable& symtab; // Referencia a la tabla de símbolos
 };
 
 class SectionReference : public Statement 
@@ -84,8 +85,7 @@ public:
         
     Statement* semantic_analysis() noexcept; 
 
-
-    void print()  noexcept override;
+    void print()  noexcept;
 
     std::string get_value() noexcept override { return id; } // Implementar según sea necesario
 
@@ -97,6 +97,7 @@ private:
     std::string id;
     SymbolTable& symtab; // Referencia a la tabla de símbolos
 };
+
 class StatementSequence : public Statement 
 {
 public:
@@ -114,12 +115,17 @@ private:
     Statement* first;
     Statement* next;
 };
+
 class Compasses : public Statement
 {
 public:
     Compasses(Statement* c1, Statement* c2) noexcept;
 
+    void print()  noexcept;
+
     void destroy() noexcept override;
+
+    std::string get_value() noexcept override;
 
 protected:
     Statement* left_Statement;
@@ -133,7 +139,7 @@ class CompassesComma : public Compasses
 public:
     using Compasses::Compasses; 
 
-    void print()  noexcept override;
+    void print()  noexcept;
 
     void destroy() noexcept override;
 
@@ -147,7 +153,7 @@ class CompassesBarLine : public Compasses
 public:
     using Compasses::Compasses; 
 
-    void print()  noexcept override;
+    void print()  noexcept;
 
     float pulse() noexcept;
 
@@ -155,7 +161,7 @@ public:
 
     void destroy() noexcept override;
 
-    std::string get_value() noexcept override { return "hola"; } // Implementar según sea necesario
+    std::string get_value() noexcept override; // Implementar según sea necesario
 };
 
 
@@ -166,7 +172,7 @@ public:
 
     std::string get_value() noexcept;
 
-    void print()  noexcept override;
+    void print()  noexcept;
 
     void destroy() noexcept override;
 
@@ -177,20 +183,23 @@ private:
 };
 
 class RepeatDeclaration : public Statement {
-    public:
-        RepeatDeclaration(int count, Statement* body) noexcept;
-        void print() noexcept override;
-        
-        std::string get_value() noexcept override { return ""; } 
+public:
+    RepeatDeclaration(Statement* count, Statement* body) noexcept;
 
-        float pulse() noexcept override { return 0.0f; } // Implementar según sea necesario
+    void repeat() noexcept;
         
-        void destroy() noexcept override;
+    void print() noexcept;
+        
+    std::string get_value() noexcept override { return ""; } 
+
+    float pulse() noexcept override { return 0.0f; } // Implementar según sea necesario
+        
+    void destroy() noexcept override;
     
-    private:
+private:
         
-        int repeat_count;
+    Statement* repeat_count;
         
-        Statement* body;
-    };
+    Statement* body;
+};
     

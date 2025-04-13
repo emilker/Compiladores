@@ -61,6 +61,9 @@ public:
         
     // Busca una sección en todos los ámbitos (del más interno al más externo)
     std::shared_ptr<Symbol> lookup(std::string name) {
+
+        if(scopes.empty()) return nullptr; // Verifica que haya ámbitos
+
         // Itera desde el final (ámbito más interno) al inicio (global)
         for(auto it = scopes.rbegin(); it != scopes.rend(); ++it) 
         {

@@ -14,8 +14,8 @@ StatementSequence::StatementSequence(Statement *f, Statement *n) noexcept
 
 void StatementSequence::print() noexcept
 {
-    first->print();
-    next->print();
+    if(first) first->print();
+    if(next) next->print();
 }
 
 void StatementSequence::destroy() noexcept
@@ -31,6 +31,11 @@ void StatementSequence::destroy() noexcept
 Compasses::Compasses(Statement* c1, Statement* c2) noexcept
     : left_Statement{c1}, right_Statement{c2}  {}
 
+void Compasses::print() noexcept
+{
+    std::cout << left_Statement->get_value() << "  " << right_Statement->get_value() << std::endl;
+}
+
 void Compasses::destroy() noexcept
 {
     left_Statement->destroy();
@@ -41,6 +46,10 @@ void Compasses::destroy() noexcept
     right_Statement = nullptr;
 }
 
+std::string Compasses::get_value() noexcept
+{
+    return left_Statement->get_value() + "  " + right_Statement->get_value();     
+}
 
 void CompassesBarLine::print() noexcept
 {
@@ -68,6 +77,11 @@ float CompassesBarLine::calculate_figure() noexcept
 
 void CompassesBarLine::destroy() noexcept
 {
+}
+
+std::string CompassesBarLine::get_value() noexcept
+{
+    return left_Statement->get_value() + " | " + right_Statement->get_value();
 }
 
 void CompassesComma::print() noexcept
@@ -132,8 +146,16 @@ void Note::destroy() noexcept
     dottes = nullptr;
 }
 
-SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _compass) noexcept
- : id{_id}, compass{_compass}{}
+SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _compass, SymbolTable& symtab)
+ : id{_id}, compass{_compass}, symtab{symtab} 
+{
+    std::string Id = id->get_value();  
+    
+    if (!symtab.bind(Id, compass) )
+    {
+        throw std::runtime_error("Sección ya definida: " + Id);
+    }
+}
 
 void SectionDeclaration::print() noexcept
 {
@@ -182,31 +204,43 @@ Statement* SectionReference::semantic_analysis() noexcept
 
     if(!resolved) {
         std::runtime_error("Sección no definida: "s + id);
+        return nullptr; // O lanza una excepción más descriptiva
     }
+    
     return resolved->body; // Asigna el cuerpo de la sección referenciada
 }
 
 void SectionReference::print() noexcept
 {
+    auto resolved = symtab.lookup(id);
+
+    if(!resolved) {
+        std::runtime_error("Sección no definida: "s + id);
+        return; // O lanza una excepción más descriptiva
+    }
+    resolved->body->print(); // Imprime el cuerpo de la sección referenciada
 }
 
 void SectionReference::destroy() noexcept
 {
 }
 
-
-RepeatDeclaration::RepeatDeclaration(int count, Statement* body) noexcept
+RepeatDeclaration::RepeatDeclaration(Statement* count, Statement* body) noexcept
     : repeat_count(count), body(body) {}
 
+void RepeatDeclaration::repeat() noexcept
+{
+}
+
 void RepeatDeclaration::print() noexcept {
-        for (int i = 0; i < repeat_count; ++i) {
+
+        int count = std::stoi(repeat_count->get_value());
+
+        for (int i = 0; i < count; ++i) {
             if (body) body->print();  
         }
 }
-    
 
-void RepeatDeclaration::destroy() noexcept {
-
+void RepeatDeclaration::destroy() noexcept 
+{
 }
-
-
