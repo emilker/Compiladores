@@ -1,4 +1,4 @@
-time 1/2 {
+time 1/4 {
 
 	G4 q, G4 q | E4 h
 }

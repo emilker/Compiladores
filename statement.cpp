@@ -226,10 +226,7 @@ Time::Time(Statement *pulse_, Statement *figure_, Statement *body_)
         throw std::runtime_error("Figura no válida:");
     }
     
-    if ( (it->second * Pulse) == body->pulse() )
-    {
-        //std::cout << "Pulsos iguales en Time" << std::endl;
-    } else
+    if ( (it->second * Pulse) != body->pulse() )
     {
         throw std::runtime_error("Pulsos desiguales en Time");
     }
