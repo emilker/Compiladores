@@ -4,7 +4,7 @@
 
 /* Definiciones de expresiones regulares */
 SPACE        [ \t\n\r]
-DIGIT        [0-9]
+DIGIT        [0-99]
 LETTER       [A-Za-z]
 NOTE         [A-G][1-8]?
 ALTERATION   [#b] 

@@ -1,6 +1,4 @@
 time 1/2 {
 
-
-	 G4 q, G4 q | E4 h
-
+	G4 q, G4 q | E4 h
 }

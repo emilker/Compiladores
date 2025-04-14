@@ -225,7 +225,11 @@ Time::Time(Statement *pulse_, Statement *figure_, Statement *body_)
     if(it == FIGURES.end()) {
         throw std::runtime_error("Figura no válida:");
     }
-    if ( !(it->second*Pulse) == body->pulse() )
+    
+    if ( (it->second * Pulse) == body->pulse() )
+    {
+        //std::cout << "Pulsos iguales en Time" << std::endl;
+    } else
     {
         throw std::runtime_error("Pulsos desiguales en Time");
     }
@@ -309,9 +313,9 @@ void RepeatDeclaration::print() noexcept {
 
 float RepeatDeclaration::pulse() noexcept
 {
-    if(body) {
-        return body->pulse(); // O lanza una excepción más descriptiva
-    }
+
+    return body->pulse(); 
+    
 }
 
 void RepeatDeclaration::destroy() noexcept
