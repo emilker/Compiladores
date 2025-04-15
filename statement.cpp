@@ -152,12 +152,23 @@ float Note::pulse() noexcept
     };
 
     auto it = durations.find(duration->get_value());
-    if(it == durations.end()) {
+
+    if(it == durations.end()) 
+    {
         std::cerr << "Duración no válida: " << duration->get_value() << std::endl;
         return 0.0f; // O lanza una excepción más descriptiva
     }
-    return it->second;
+
+    float pulse = it->second; 
+    
+    if (dottes) 
+    {
+        pulse += (pulse * 0.5) ;
+    }
+
+    return pulse;
 }
+
 void Note::destroy() noexcept
 {
     note->destroy();    
@@ -221,7 +232,13 @@ Time::Time(Statement *pulse_, Statement *figure_, Statement *body_)
         {1, 4}, {2, 2}, {4, 1}, {8, 0.5}, {16, 0.25}
     };
 
+    if ( Pulse > 12 ) 
+    {
+        throw std::runtime_error("Pulso no válido:");
+    }
+
     auto it = FIGURES.find(Figure);
+
     if(it == FIGURES.end()) {
         throw std::runtime_error("Figura no válida:");
     }
