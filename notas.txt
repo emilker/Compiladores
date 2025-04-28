@@ -5,5 +5,5 @@ time 3/4
 	}
 
 	D5 h, D5 q | B4 h.        
-	C5 h, C5 q. | G4 h.      
+	C5 h, C5 q | G4 h.      
 }

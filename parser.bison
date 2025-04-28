@@ -14,6 +14,8 @@ int yyerror(const char*);
 
 Statement* parser_result{nullptr};
 
+bool time_active = false; 
+
 %}
 
 %token TOKEN_EOF
@@ -42,52 +44,53 @@ Statement* parser_result{nullptr};
 %token TOKEN_DOTTED
 
 %%
-program : statement                                                                     { parser_result = $1; }
+program : statement                                                                  { parser_result = $1; }
         ;                                              
-statement : compasses statement                                                         { $$ = new StatementSequence($1, $2); }
-          | section statement                                                           { $$ = new StatementSequence($1, $2); }
-          | time statement                                                              { $$ = new StatementSequence($1, $2); }
-          | idReference statement                                                       { $$ = new StatementSequence($1, $2); }
-          | section                                                                     { $$ = $1; }
-          | idReference                                                                 { $$ = $1; }
-          | time                                                                        { $$ = $1; }
-          | compasses                                                                   { $$ = $1; }
+statement : compasses statement                                                      { $$ = new StatementSequence($1, $2); }
+          | section statement                                                        { $$ = new StatementSequence($1, $2); }
+          | time statement                                                           { $$ = new StatementSequence($1, $2); }
+          | idReference statement                                                    { $$ = new StatementSequence($1, $2); }
+          | section                                                                  { $$ = $1; }
+          | idReference                                                              { $$ = $1; }
+          | time                                                                     { $$ = $1; }
+          | compasses                                                                { $$ = $1; }
           ;          
 
-time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE                  { 
-                                                                                               try
-                                                                                               {
-                                                                                                    $$ = new Time($2, $4, $6);
-                                                                                               }catch (const std::exception& e) 
-                                                                                               {
-                                                                                                    yyerror(e.what());
-                                                                                                    YYERROR;
-                                                                                               }  
-                                                                                                      
-                                                                                         }
+time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE             { 
+                                                                                          try
+                                                                                          {
+                                                                                               time_active = true;
+                                                                                               $$ = new Time($2, $4, $6);
+                                                                                          }catch (const std::exception& e) 
+                                                                                          {
+                                                                                               yyerror(e.what());
+                                                                                               YYERROR;
+                                                                                          }  
+                                                                                          time_active = false;       
+                                                                                     }
      ;
 
 
-section : TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                          { 
-                                                                                               try 
-                                                                                               {
-                                                                                                    $$ = new SectionDeclaration($2, $4, symbolTable); 
-                                                                                               } catch (const std::exception& e) 
-                                                                                               {
-                                                                                                    yyerror(e.what());
-                                                                                                    YYERROR;
-                                                                                               }
-                                                                                        }
-        | TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                        {  $$ = new RepeatDeclaration($2, $4); }                                                         
+section : TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                       { 
+                                                                                          try 
+                                                                                          {
+                                                                                               $$ = new SectionDeclaration($2, $4, symbolTable); 
+                                                                                          }catch (const std::exception& e) 
+                                                                                          {
+                                                                                               yyerror(e.what());
+                                                                                               YYERROR;
+                                                                                          }
+                                                                                     }
+        | TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                     {  $$ = new RepeatDeclaration($2, $4); }                                                         
         ; 
 
-digit : TOKEN_DIGIT                                                                     { $$ = new Value(yytext); }
+digit : TOKEN_DIGIT                                                                  { $$ = new Value(yytext); }
       ;
       
-id : TOKEN_IDENTIFIER                                                                   { $$ = new Value(yytext); }                                  
+id : TOKEN_IDENTIFIER                                                                { $$ = new Value(yytext); }                                  
    ;
 
-idReference : TOKEN_IDENTIFIER                                                          {   
+idReference : TOKEN_IDENTIFIER                                                       {   
                                                                                           auto ID = new SectionReference(yytext,symbolTable);
                                                                                           auto ref = ID->semantic_analysis();
                                                                                           if (!ref) 
@@ -96,37 +99,55 @@ idReference : TOKEN_IDENTIFIER                                                  
                                                                                                YYERROR;
                                                                                           }
                                                                                           $$ = ref;
-                                                                                        }                                  
+                                                                                     }                                  
             ;
 
-compasses : compasses TOKEN_BAR_LINE notes                                              { $$ = new CompassesBarLine($1, $3); }
-          |  notes                                                                      { $$ = $1; }
+compasses : compasses TOKEN_BAR_LINE notes                                           { 
+                                                                                          try 
+                                                                                          {  
+                                                                                               $$ =  new CompassesBarLine($1, $3, time_active);   
+                                                                                          }catch (const std::exception& e) 
+                                                                                          {
+                                                                                               yyerror(e.what());
+                                                                                               YYERROR;
+                                                                                          }
+                                                                                     }
+          |  notes                                                                   { $$ = $1; }
           ;
 
-notes: notes TOKEN_COMMA note                                                           { $$ = new CompassesComma($1, $3); }
-     | note                                                                             { $$ = $1; } 
+notes: notes TOKEN_COMMA note                                                        { try 
+                                                                                          {  
+                                                                                              $$ =  new CompassesComma($1, $3, time_active);
+                                                                                               
+                                                                                          }catch (const std::exception& e) 
+                                                                                          {
+                                                                                               yyerror(e.what());
+                                                                                               YYERROR;
+                                                                                          } 
+                                                                                     }
+     | note                                                                          { $$ = $1; } 
      ;   
 
-note : notename duration                                                                { $$ = new Note($1, nullptr, $2, nullptr); }
-     | notename duration dotted                                                         { $$ = new Note($1, nullptr, $2, $3); }   
-     | notename alteration duration                                                     { $$ = new Note($1, $2, $3, nullptr); }  
-     | notename alteration duration dotted                                              { $$ = new Note($1, $2, $3, $4); }  
+note : notename duration                                                             { $$ = new Note($1, nullptr, $2, nullptr); }
+     | notename duration dotted                                                      { $$ = new Note($1, nullptr, $2, $3); }   
+     | notename alteration duration                                                  { $$ = new Note($1, $2, $3, nullptr); }  
+     | notename alteration duration dotted                                           { $$ = new Note($1, $2, $3, $4); }  
      ;
 
-notename  : TOKEN_NOTE                                                                  { $$ = new Value(yytext);}
-          | TOKEN_REST                                                                  { $$ = new Value(yytext);}
+notename  : TOKEN_NOTE                                                               { $$ = new Value(yytext);}
+          | TOKEN_REST                                                               { $$ = new Value(yytext);}
           ;
 
-duration : TOKEN_DURATION                                                               { $$ = new Value(yytext);}                    
+duration : TOKEN_DURATION                                                            { $$ = new Value(yytext);}                    
          ;
 
-alteration : TOKEN_ALTERATION                                                           { $$ = new Value(yytext);}                    
+alteration : TOKEN_ALTERATION                                                        { $$ = new Value(yytext);}                    
            ;
 
-dotted : TOKEN_DOTTED                                                                   { $$ = new Value(yytext);}                    
+dotted : TOKEN_DOTTED                                                                { $$ = new Value(yytext);}                    
        ;
         
-body : statement                                                                        { $$ = $1; }
+body : statement                                                                     { $$ = $1; }
      ;
 %%
 

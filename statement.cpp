@@ -40,8 +40,30 @@ float StatementSequence::pulse() noexcept
     return pulse;
 }
 
-Compasses::Compasses(Statement* c1, Statement* c2) noexcept
-    : left_Statement{c1}, right_Statement{c2}, left_pulse{0.0f},right_pulse{0.0f}  {}
+Compasses::Compasses(Statement* c1, Statement* c2, bool time_)
+    : left_Statement{c1}, right_Statement{c2}, left_pulse{0.0f}, right_pulse{0.0f}, time{time_}  
+{
+    if (time == false) 
+    {
+        if(left_Statement) 
+        {
+            left_pulse = left_Statement->pulse();
+            if (left_pulse > 4.0f) 
+            {
+                throw std::runtime_error("los tipos de superan el 4/4"); 
+            }
+        }
+
+        if(right_Statement) 
+        {
+            right_pulse = right_Statement->pulse();
+            if (right_pulse > 4.0f) 
+            {
+                throw std::runtime_error("los tipos de superan el 4/4");
+            }
+        }
+    }
+}
 
 void Compasses::destroy() noexcept
 {
@@ -101,7 +123,9 @@ std::string CompassesBarLine::get_value() noexcept
     return left_Statement->get_value() + " | " + right_Statement->get_value();
 }
 
-void CompassesComma::print() noexcept{}
+void CompassesComma::print() noexcept{
+    std::cout << left_Statement->get_value() << " , " << right_Statement->get_value() << std::endl;
+}
 
 void CompassesComma::destroy() noexcept
 {

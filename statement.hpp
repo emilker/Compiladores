@@ -93,7 +93,7 @@ private:
 class Compasses : public Statement
 {
 public:
-    Compasses(Statement* c1, Statement* c2) noexcept;
+    Compasses(Statement* c1, Statement* c2, bool time_);
 
     void destroy() noexcept override;
 
@@ -103,6 +103,7 @@ protected:
     float compass_pulse;
     float left_pulse;
     float right_pulse;
+    bool time;
 };
 class CompassesComma : public Compasses 
 {       
