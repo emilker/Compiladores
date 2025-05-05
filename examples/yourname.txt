@@ -1,0 +1,7 @@
+time 12/8
+{
+    repeat 2 {
+        B4 e, C5#e, F5#e, B4 e, C5#e, F5#e, B4 e, C5#e, F5#e, B4 e, C5#e, F5#e| B4 e, C5#e, F5#e, B4 e, C5#e, F5#e, B4 e, C5#e, F5#e, B4 e, C5#e, F5#e 
+    }
+   B4 e, C5#e, F5#e, B4 e, C5#e, F5#e, B4 e, C5#e, F5#e, B4 e, C5#e, F5#e| B4 e, C5#e, F5#e, B4 e, C5#e, F5#e, B4 e, C5#e, F5#e, B4 e, C5#e, F5#e 
+}
