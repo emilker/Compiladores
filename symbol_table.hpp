@@ -17,8 +17,7 @@ public:
         return std::make_shared<Symbol>(name, body); // Crea un shared_ptr con nuevo Symbol
     }
         
-
-    Symbol(std::string_view name, Statement* body) : name(name),body(body),pulse(4),figure(4) {}   
+    Symbol(std::string_view name, Statement* body) : name(name), body(body), pulse(4), figure(4) {}   
 };
 
 class SymbolTable {

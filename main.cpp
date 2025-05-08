@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
-
+#include "symbol_table.hpp"
 #include <statement.hpp>
 
 extern FILE* yyin;
@@ -32,11 +32,30 @@ int main(int argc, char* argv[])
     int result = yyparse();
 
     if (result == 0)
-    {
+    { 
+        SymbolTable symbolTable;  
         std::cout << "Parse successful!\n" << std::endl;
+       
+        if (parser_result->resolve_name(symbolTable))
+        {
+            std::cout << "Name resolution successful!\n" << std::endl;
+        }
+        else
+        {
+            std::cout << "Name resolution failed!\n" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        
+        if (parser_result->semantic_analysis(symbolTable))
+        {
+            std::cout << "Semantic analysis successful!\n" << std::endl;
+        }
+        else
+        {
+            std::cerr << "Semantic analysis failed!\n" << std::endl;
+            exit(EXIT_FAILURE);
+        }
         parser_result->print();
-        parser_result->pulse();
-        //parser_result->destroy();
     }
     else
     {

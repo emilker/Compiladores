@@ -36,37 +36,75 @@ void StatementSequence::destroy() noexcept
 
 float StatementSequence::pulse() noexcept
 {
-    float pulse = 0.0f;
+    float first_ = 0.0f;
+    float next_ = 0.0f;
 
-    if (first) pulse = first->pulse();
-    if (next) pulse = next->pulse();
+    if (first) first_ = first->pulse();
+    if (next) next_ = next->pulse();
+    
+    if (first_ == next_)
+    {
+        return first_;
+    }
+    else
+    {
+        return 0.0f; 
+    }
+}
 
-    return pulse;
+bool StatementSequence::semantic_analysis(SymbolTable &symbol_table) noexcept
+{
+    bool result = true;
+
+    if (first)
+    {
+        result =  first->semantic_analysis(symbol_table);
+        if (!result)
+        {
+            return false;
+        }
+    } 
+
+    if (next) 
+    {
+        result = next->semantic_analysis(symbol_table);
+        if (!result)
+        {
+            return false;
+        }
+    }
+
+    return true; // Semántica exitosa
+}
+
+bool  StatementSequence::resolve_name(SymbolTable &symbol_table) noexcept
+{
+    bool result = true;
+
+    if (first)
+    {
+        result = first->resolve_name(symbol_table);
+        if (!result)
+        {
+            return false;
+        }
+    } 
+
+    if (next) 
+    {
+        result = next->resolve_name(symbol_table);
+        if (!result)
+        {
+            return false;
+        }
+    }
+
+    return true; //resolución de nombres exitosa
 }
 
 Compasses::Compasses(Statement* c1, Statement* c2, bool time_)
-    : left_Statement(c1), right_Statement(c2), left_pulse(0), right_pulse(0), time(time_)
+    : left_Statement(c1), right_Statement(c2), left_pulse(0.0f), right_pulse(0.0f), time(time_)
 {
-    if (!time)
-    {
-        if (left_Statement)
-        {
-            left_pulse = left_Statement->pulse();
-            if (left_pulse > 17.0f)
-            {
-                throw std::runtime_error("Bad declaration of times");
-            }
-        }
-
-        if (right_Statement)
-        {
-            right_pulse = right_Statement->pulse();
-            if (right_pulse > 17.0f)
-            {
-                throw std::runtime_error("Bad declaration of times");
-            }
-        }
-    }
 }
 
 void Compasses::destroy() noexcept
@@ -80,6 +118,31 @@ void Compasses::destroy() noexcept
     right_Statement = nullptr;
 }
 
+bool Compasses::semantic_analysis(SymbolTable &symbol_table) noexcept
+{
+    if (!time)
+    {
+        if (left_Statement)
+        {
+            left_pulse = left_Statement->pulse();
+            if (left_pulse > 17.0f)
+            {
+               return false;
+            }
+        }
+
+        if (right_Statement)
+        {
+            right_pulse = right_Statement->pulse();
+            if (right_pulse > 17.0f)
+            {
+                return false; 
+            }
+        }
+    }
+    return true;
+}
+
 void CompassesBarLine::print() noexcept
 {
     std::cout << left_Statement->get_value() << " | " << right_Statement->get_value() << std::endl;
@@ -88,7 +151,7 @@ void CompassesBarLine::print() noexcept
 float CompassesBarLine::pulse() noexcept
 {
     if (left_Statement) left_pulse = left_Statement->pulse();
-    if (right_Statement) right_pulse = right_Statement->pulse();
+    if (right_Statement) right_pulse = right_Statement->pulse();  
 
     if (left_pulse == right_pulse)
     {
@@ -96,13 +159,8 @@ float CompassesBarLine::pulse() noexcept
     }
     else
     {
-        throw std::runtime_error("Uneven pulses");
+        return 0.0f; 
     }
-}
-
-float CompassesBarLine::calculate_figure() noexcept
-{
-    return 0.0f;
 }
 
 void CompassesBarLine::destroy() noexcept
@@ -119,6 +177,33 @@ void CompassesBarLine::destroy() noexcept
 std::string CompassesBarLine::get_value() noexcept
 {
     return left_Statement->get_value() + " | " + right_Statement->get_value();
+}
+
+bool CompassesBarLine::semantic_analysis(SymbolTable &symbol_table) noexcept
+{
+    if (!time)
+    {
+        if (left_Statement)
+        {
+            left_pulse += left_Statement->pulse();
+
+            if (left_pulse > 4.0f)
+            {
+               return false;
+            }
+        }
+
+        if (right_Statement)
+        {
+            right_pulse = right_Statement->pulse();
+
+            if (right_pulse > 4.0f)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 void CompassesComma::print() noexcept
@@ -148,24 +233,47 @@ std::string CompassesComma::get_value() noexcept
     return left_Statement->get_value() + " , " + right_Statement->get_value();
 }
 
+bool CompassesComma::semantic_analysis(SymbolTable &symbol_table) noexcept
+{
+    if (!time)
+    {   
+        float pulse_total = 0.0f;
+
+        if (left_Statement)
+        {
+            left_pulse += left_Statement->pulse();            
+        }
+
+        if (right_Statement)
+        {
+            right_pulse = right_Statement->pulse();
+        }
+
+        pulse_total = left_pulse + right_pulse;
+
+        if (pulse_total > 4.0f)
+        {
+            return false; 
+        }
+    }
+    return true;
+}
+
 float CompassesComma::pulse() noexcept
 {
-    left_pulse = left_Statement ? left_Statement->pulse() : 0.0f;
-    right_pulse = right_Statement ? right_Statement->pulse() : 0.0f;
+    left_pulse += left_Statement ? left_Statement->pulse() : 0.0f; 
+    right_pulse += right_Statement ? right_Statement->pulse() : 0.0f;
     return left_pulse + right_pulse;
 }
 
-Note::Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_) noexcept
-    : note(note_), alteration(alteration_), duration(duration_), dottes(dottes_)
+Note::Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_, bool time_) noexcept
+    : note(note_), alteration(alteration_), duration(duration_), dottes(dottes_), time(time_)
 {
 }
 
 void Note::print() noexcept
 {
-    if (note) note->print();
-    if (alteration) alteration->print();
-    if (duration) duration->print();
-    if (dottes) dottes->print();
+    std::cout << get_value() << std::endl;
 }
 
 std::string Note::get_value() noexcept
@@ -176,6 +284,19 @@ std::string Note::get_value() noexcept
            (dottes ? dottes->get_value() : "");
 }
 
+bool Note::semantic_analysis(SymbolTable &symbol_table) noexcept
+{
+    if (!time)
+    {
+        float pulse_ = pulse(); 
+        if (pulse_ > 4.0f)
+        {
+            return false; // Error: duración de la nota no válida
+        }
+    }
+    return true;
+}
+
 float Note::pulse() noexcept
 {
     static std::unordered_map<std::string, float> durations = {
@@ -183,11 +304,6 @@ float Note::pulse() noexcept
     };
 
     auto it = durations.find(duration->get_value());
-    if (it == durations.end())
-    {
-        std::cerr << "Invalid duration: " << duration->get_value() << std::endl;
-        return 0.0f;
-    }
 
     float pulse = it->second;
 
@@ -218,15 +334,9 @@ void Note::destroy() noexcept
     dottes = nullptr;
 }
 
-SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _compass, SymbolTable& symtab)
-    : id(_id), compass(_compass), symtab(symtab)
+SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _compass)
+    : id(_id), compass(_compass)
 {
-    std::string Id = id->get_value();
-
-    if (!symtab.bind(Id, compass))
-    {
-        throw std::runtime_error("Section already defined: " + Id);
-    }
 }
 
 void SectionDeclaration::print() noexcept
@@ -242,6 +352,17 @@ void SectionDeclaration::destroy() noexcept
     compass->destroy();
     delete compass;
     compass = nullptr;
+}
+
+bool SectionDeclaration::resolve_name(SymbolTable &symbol_table) noexcept
+{
+    std::string id_ = id->get_value();
+
+    if (!symbol_table.bind(id_, compass))
+    {
+        return false; // Error: sección ya definida
+    }
+    return true;
 }
 
 Value::Value(std::string v) noexcept
@@ -266,28 +387,6 @@ void Value::destroy() noexcept
 Time::Time(Statement* pulse_, Statement* figure_, Statement* body_)
     : pulse_(pulse_), figure_(figure_), body(body_)
 {
-    int pulse = std::stoi(pulse_->get_value());
-    int figure = std::stoi(figure_->get_value());
-
-    static std::unordered_map<int, float> FIGURES = {
-        {1, 4}, {2, 2}, {4, 1}, {8, 0.5}, {16, 0.25}
-    };
-
-    if (pulse > 17)
-    {
-        throw std::runtime_error("Invalid pulse:");
-    }
-
-    auto it = FIGURES.find(figure);
-    if (it == FIGURES.end())
-    {
-        throw std::runtime_error("Invalid figure:");
-    }
-
-    if ((it->second * pulse) != body->pulse())
-    {
-        throw std::runtime_error("Uneven pulses in Time");
-    }
 }
 
 void Time::print() noexcept
@@ -310,35 +409,53 @@ void Time::destroy() noexcept
     body = nullptr;
 }
 
-SectionReference::SectionReference(std::string id, SymbolTable& symtab) noexcept
-    : id(id), symtab(symtab)
+float Time::pulse() noexcept
 {
+    return body->pulse();
 }
 
-Statement* SectionReference::semantic_analysis() noexcept
+bool Time::semantic_analysis(SymbolTable& symbol_table) noexcept
 {
-    auto resolved = symtab.lookup(id);
+    int pulse = std::stoi(pulse_->get_value());
+    int figure = std::stoi(figure_->get_value());
 
-    if (!resolved)
+    static std::unordered_map<int, float> FIGURES = {
+        {1, 4}, {2, 2}, {4, 1}, {8, 0.5}, {16, 0.25}
+    };
+    
+    auto it = FIGURES.find(figure);
+
+    if (it == FIGURES.end())
     {
-        std::runtime_error("Section not defined:"s + id);
-        return nullptr;
+       return false;
     }
 
-    return resolved->body;
+    if (pulse > 12)
+    {
+        return false;
+    }
+
+    if ((it->second * pulse) != body->pulse())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool Time::resolve_name(SymbolTable &symbol_table) noexcept
+{
+    return body->resolve_name(symbol_table);
+}
+
+SectionReference::SectionReference(std::string _id) noexcept
+    : id(_id), compass(nullptr)
+{
 }
 
 void SectionReference::print() noexcept
 {
-    auto resolved = symtab.lookup(id);
-
-    if (!resolved)
-    {
-        std::runtime_error("Section not defined: "s + id);
-        return;
-    }
-
-    resolved->body->print();
+    compass->print();
 }
 
 void SectionReference::destroy() noexcept
@@ -347,21 +464,29 @@ void SectionReference::destroy() noexcept
 
 float SectionReference::pulse() noexcept
 {
-    auto resolved = symtab.lookup(id);
+    return compass->pulse();
+}
+
+bool SectionReference::resolve_name(SymbolTable &symbol_table) noexcept
+{
+    auto resolved = symbol_table.lookup(id);
+
     if (!resolved)
     {
-        return 0.0f;
+        return false; // Error: sección no definida
     }
 
-    return resolved->body->pulse();
+    compass = resolved->body;
+    return true;
+}
+
+bool SectionReference::semantic_analysis(SymbolTable &symbol_table) noexcept
+{
+    return compass->semantic_analysis(symbol_table);
 }
 
 RepeatDeclaration::RepeatDeclaration(Statement* count, Statement* body) noexcept
     : repeat_count(count), body(body)
-{
-}
-
-void RepeatDeclaration::repeat() noexcept
 {
 }
 
@@ -378,6 +503,11 @@ void RepeatDeclaration::print() noexcept
 float RepeatDeclaration::pulse() noexcept
 {
     return body->pulse();
+}
+
+bool RepeatDeclaration::semantic_analysis(SymbolTable& symbol_table) noexcept
+{
+    return body->semantic_analysis(symbol_table);
 }
 
 void RepeatDeclaration::destroy() noexcept
