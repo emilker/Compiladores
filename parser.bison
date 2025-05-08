@@ -2,6 +2,7 @@
 #include <iostream>
 #include <statement.hpp>
 #include <string> 
+#include <stack>
 
 #define YYSTYPE Statement*
 
@@ -10,8 +11,11 @@ extern char* yytext;
 int yyerror(const char*);
 
 Statement* parser_result{nullptr};
+std::stack<bool> time_active_stack;
 
-bool time_active = false; 
+bool is_time_active() {
+    return !time_active_stack.empty() && time_active_stack.top();
+}
 
 %}
 
@@ -53,12 +57,12 @@ statement : compasses statement                                                 
           | compasses                                                                { $$ = $1; }
           ;          
 
-time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE body TOKEN_RBRACE             { 
-                                                                                          time_active = true;
-                                                                                          $$ = new Time($2, $4, $6);
-                                                                                          time_active = false;       
-                                                                                     }
-     ;
+time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE{  time_active_stack.push(true);  } body TOKEN_RBRACE {
+    $$ = new Time($2, $4, $7);
+          if (!time_active_stack.empty()) {
+          time_active_stack.pop(); 
+          }
+}
 
 
 section : TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                       { $$ = new SectionDeclaration($2, $4); }
@@ -74,18 +78,18 @@ id : TOKEN_IDENTIFIER                                                           
 idReference : TOKEN_IDENTIFIER                                                       { $$ = new SectionReference(yytext);}                                  
             ;
 
-compasses : compasses TOKEN_BAR_LINE notes                                           { $$ =  new CompassesBarLine($1, $3, time_active); }  
+compasses : compasses TOKEN_BAR_LINE notes                                           { $$ =  new CompassesBarLine($1, $3, is_time_active()); }  
           |  notes                                                                   { $$ = $1; }
           ;
 
-notes: notes TOKEN_COMMA note                                                        { $$ =  new CompassesComma($1, $3, time_active); }
+notes: notes TOKEN_COMMA note                                                        { $$ =  new CompassesComma($1, $3, is_time_active()); }
      | note                                                                          { $$ = $1; } 
      ;   
 
-note : notename duration                                                             { $$ = new Note($1, nullptr, $2, nullptr, time_active); }
-     | notename duration dotted                                                      { $$ = new Note($1, nullptr, $2, $3, time_active); }   
-     | notename alteration duration                                                  { $$ = new Note($1, $2, $3, nullptr, time_active); }  
-     | notename alteration duration dotted                                           { $$ = new Note($1, $2, $3, $4, time_active); }  
+note : notename duration                                                             { $$ = new Note($1, nullptr, $2, nullptr, is_time_active()); }
+     | notename duration dotted                                                      { $$ = new Note($1, nullptr, $2, $3, is_time_active()); }   
+     | notename alteration duration                                                  { $$ = new Note($1, $2, $3, nullptr, is_time_active()); }  
+     | notename alteration duration dotted                                           { $$ = new Note($1, $2, $3, $4, is_time_active()); }  
      ;
 
 notename  : TOKEN_NOTE                                                               { $$ = new Value(yytext);}
@@ -101,8 +105,8 @@ alteration : TOKEN_ALTERATION                                                   
 dotted : TOKEN_DOTTED                                                                { $$ = new Value(yytext);}                    
        ;
         
-body : statement                                                                     { $$ = $1; }
-     ;
+body: statement {  $$ = $1; }
+    ;
 %%
 
 int yyerror(const char* s)

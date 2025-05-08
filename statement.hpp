@@ -45,7 +45,6 @@ public:
     void destroy() noexcept override;
     float pulse() noexcept = 0;
     std::string get_value() noexcept = 0;
-    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
     
 protected:
     Statement* left_Statement;
@@ -136,7 +135,7 @@ public:
  
     void print() noexcept override;
     void destroy() noexcept override;
-    float pulse() noexcept override;
+    float pulse() noexcept override { return 1000; }
     bool semantic_analysis(SymbolTable& symbol_table) noexcept;
     bool resolve_name(SymbolTable& symbol_table) noexcept;
  

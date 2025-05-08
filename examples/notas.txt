@@ -1,41 +1,9 @@
-time 3/4
+time 6/8
 {      
+	time 3/4
+	{      
+		C5 h, C5 q | G4 h.| G4 h.
+	}
+
 	C5 h, C5 q | G4 h.| G4 h.
-	time 3/4
-	{      
-		C5 h, C5 q | G4 h.| G4 h.
-	}
-
-	time 3/4
-	{      
-		G5 h, C5 q | G4 h.| G4 h.
-	}
-}
-
-C5 h
-
-time 3/4
-{      
-		G5 h, C5 q | G4 h.| G4 h.
-
-	time 3/4
-	{      
-		C5 h, C5 q | G4 h.| G4 h.
-		time 3/4
-		{      
-			C5 h, C5 q | G4 h.| G4 h.
-		}
-
-		time 3/4
-		{      
-			repeat 2 {
-				A5 h, C5 q | G4 h.| G4 h.
-			}
-		G5 h, C5 q | G4 h.| G4 h.
-		}
-	}	
-}
-
-repeat 2 {
-	C5 h
 }

@@ -40,17 +40,17 @@ float StatementSequence::pulse() noexcept
     float next_ = 0.0f;
 
     if (first) first_ = first->pulse();
-    if (next) next_ = next->pulse();
     
-    if (first_ == next_)
+    if (next) next_ = next->pulse();
+
+    if ( first_ == 1000)
     {
-        return first_;
+        return next_;
     }
-    else
-    {
-        return 0.0f; 
-    }
+    
+    return first_;
 }
+
 
 bool StatementSequence::semantic_analysis(SymbolTable &symbol_table) noexcept
 {
@@ -116,31 +116,6 @@ void Compasses::destroy() noexcept
     right_Statement->destroy();
     delete right_Statement;
     right_Statement = nullptr;
-}
-
-bool Compasses::semantic_analysis(SymbolTable &symbol_table) noexcept
-{
-    if (!time)
-    {
-        if (left_Statement)
-        {
-            left_pulse = left_Statement->pulse();
-            if (left_pulse > 17.0f)
-            {
-               return false;
-            }
-        }
-
-        if (right_Statement)
-        {
-            right_pulse = right_Statement->pulse();
-            if (right_pulse > 17.0f)
-            {
-                return false; 
-            }
-        }
-    }
-    return true;
 }
 
 void CompassesBarLine::print() noexcept
@@ -409,15 +384,14 @@ void Time::destroy() noexcept
     body = nullptr;
 }
 
-float Time::pulse() noexcept
-{
-    return body->pulse();
-}
-
 bool Time::semantic_analysis(SymbolTable& symbol_table) noexcept
 {
+    //std::cout << "Time::semantic_analysis" << std::endl;
     int pulse = std::stoi(pulse_->get_value());
     int figure = std::stoi(figure_->get_value());
+
+   // std::cout << "pulse: " << pulse << std::endl;
+   // std::cout << "figure: " << figure << std::endl;
 
     static std::unordered_map<int, float> FIGURES = {
         {1, 4}, {2, 2}, {4, 1}, {8, 0.5}, {16, 0.25}
@@ -435,10 +409,26 @@ bool Time::semantic_analysis(SymbolTable& symbol_table) noexcept
         return false;
     }
 
-    if ((it->second * pulse) != body->pulse())
+   if (!body->semantic_analysis(symbol_table))
     {
+        //std::cout << "Error en la semántica del cuerpo" << std::endl;
         return false;
     }
+
+  
+   
+   float pulse__ = body->pulse();
+
+   // std::cout << "body pulse: " << pulse__ << std::endl; 
+   
+
+    if ((it->second * pulse) != pulse__)
+    {
+      //std::cout << "hola" << std::endl;
+        return false;
+    }
+
+    //std::cout << "pasooo" << std::endl;
 
     return true;
 }
