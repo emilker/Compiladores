@@ -1,0 +1,25 @@
+time 4/4 {
+    -e, C5#q, B4 e, B4 e, A4 q, E4 e | F4#e, A4 e, B4 e, E4 e, A4 e, B4 e, D4 e, A4 e
+
+    B4 e, E4 e, A4 e, B4 e, A4 e, G4#e, F4#e, E4 e | -q, C5#e, A4 e, B4 e, C5#q, F4#e
+
+    time 2/4
+    {
+        G4#q, G4#q
+    }  
+
+    time 3/8
+    {
+        E4 e, G4#e, B4 e | C5 e, E5 e, G5 e | G4 e, B4 e, D5 e  
+    }
+
+    time 5/8
+    {
+        F4#e, A4 e, D5 e, D4 e, F4#e 
+    }
+
+    time 4/4
+    {
+        G4#w
+    }
+}
