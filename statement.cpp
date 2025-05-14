@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <string>
 #include "symbol_table.hpp"
+#include "audiogenerator.hpp"
 
 
 using namespace std::literals;
@@ -36,59 +37,100 @@ void StatementSequence::destroy() noexcept
 
 float StatementSequence::pulse() noexcept
 {
-    float pulse = 0.0f;
+    float first_ = 0.0f;
+    float next_ = 0.0f;
 
-    if (first) pulse = first->pulse();
-    if (next) pulse = next->pulse();
+    if (first) first_ = first->pulse();
+    
+    if (next) next_ = next->pulse();
 
-    return pulse;
+    if ( first_ == 1000) return next_;
+    
+    return first_;
 }
 
-Compasses::Compasses(Statement* c1, Statement* c2, bool time_)
-    : left_Statement(c1), right_Statement(c2), left_pulse(0), right_pulse(0), time(time_)
-{
-    if (!time)
-    {
-        if (left_Statement)
-        {
-            left_pulse = left_Statement->pulse();
-            if (left_pulse > 17.0f)
-            {
-                throw std::runtime_error("Bad declaration of times");
-            }
-        }
 
-        if (right_Statement)
+bool StatementSequence::semantic_analysis(SymbolTable &symbol_table) noexcept
+{
+    bool result = true;
+
+    if (first)
+    {
+        result =  first->semantic_analysis(symbol_table);
+        if (!result)
         {
-            right_pulse = right_Statement->pulse();
-            if (right_pulse > 17.0f)
-            {
-                throw std::runtime_error("Bad declaration of times");
-            }
+            return false;
+        }
+    } 
+
+    if (next) 
+    {
+        result = next->semantic_analysis(symbol_table);
+        if (!result)
+        {
+            return false;
         }
     }
+
+    return true;
 }
 
-void Compasses::destroy() noexcept
+bool  StatementSequence::resolve_name(SymbolTable &symbol_table) noexcept
 {
-    left_Statement->destroy();
-    delete left_Statement;
-    left_Statement = nullptr;
+    bool result = true;
 
-    right_Statement->destroy();
-    delete right_Statement;
-    right_Statement = nullptr;
+    if (first)
+    {
+        result = first->resolve_name(symbol_table);
+        if (!result)
+        {
+            return false;
+        }
+    } 
+
+    if (next) 
+    {
+        result = next->resolve_name(symbol_table);
+        if (!result)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
-void CompassesBarLine::print() noexcept
+void StatementSequence::generate_sound(AudioGenerator &audio_gen) noexcept
 {
-    std::cout << left_Statement->get_value() << " | " << right_Statement->get_value() << std::endl;
+    if (first) first->generate_sound(audio_gen);
+    if (next) next->generate_sound(audio_gen);
 }
 
-float CompassesBarLine::pulse() noexcept
+Measures::Measures(Statement* c1, Statement* c2, bool time_)
+    : left_Sequence(c1), right_Sequence(c2), left_pulse(0.0f), right_pulse(0.0f), time(time_)
 {
-    if (left_Statement) left_pulse = left_Statement->pulse();
-    if (right_Statement) right_pulse = right_Statement->pulse();
+}
+
+void Measures::destroy() noexcept
+{
+    left_Sequence->destroy();
+    delete left_Sequence;
+    left_Sequence = nullptr;
+
+    right_Sequence->destroy();
+    delete right_Sequence;
+    right_Sequence = nullptr;
+}
+
+void MeasureSequence::print() noexcept
+{
+    std::cout << left_Sequence->get_value() << " | " << right_Sequence->get_value() << std::endl;
+}
+
+float MeasureSequence::pulse() noexcept
+{
+    if (left_Sequence) left_pulse = left_Sequence->pulse();
+    if (right_Sequence) right_pulse = right_Sequence->pulse();  
 
     if (left_pulse == right_pulse)
     {
@@ -96,76 +138,136 @@ float CompassesBarLine::pulse() noexcept
     }
     else
     {
-        throw std::runtime_error("Uneven pulses");
+        return 0.0f; 
     }
 }
 
-float CompassesBarLine::calculate_figure() noexcept
+void MeasureSequence::destroy() noexcept
 {
-    return 0.0f;
+    left_Sequence->destroy();
+    delete left_Sequence;
+    left_Sequence = nullptr;
+
+    right_Sequence->destroy();
+    delete right_Sequence;
+    right_Sequence = nullptr;
 }
 
-void CompassesBarLine::destroy() noexcept
+std::string MeasureSequence::get_value() noexcept
 {
-    left_Statement->destroy();
-    delete left_Statement;
-    left_Statement = nullptr;
-
-    right_Statement->destroy();
-    delete right_Statement;
-    right_Statement = nullptr;
+    return left_Sequence->get_value() + " | " + right_Sequence->get_value();
 }
 
-std::string CompassesBarLine::get_value() noexcept
+bool MeasureSequence::semantic_analysis(SymbolTable &symbol_table) noexcept
 {
-    return left_Statement->get_value() + " | " + right_Statement->get_value();
-}
-
-void CompassesComma::print() noexcept
-{
-    std::cout << left_Statement->get_value() << " , " << right_Statement->get_value() << std::endl;
-}
-
-void CompassesComma::destroy() noexcept
-{
-    if (left_Statement)
+    if (!time)
     {
-        left_Statement->destroy();
-        delete left_Statement;
-        left_Statement = nullptr;
+        if (left_Sequence)
+        {
+            left_pulse = left_Sequence->pulse();
+            if (left_pulse > 4.0f)
+            {
+               return false;
+            }
+        }
+
+        if (right_Sequence)
+        {
+            right_pulse = right_Sequence->pulse();
+            if (right_pulse > 4.0f)
+            {
+                return false;
+            }
+        }
     }
 
-    if (right_Statement)
+    return true;
+}
+
+void MeasureSequence::generate_sound(AudioGenerator &audio_gen) noexcept
+{
+    if (left_Sequence) left_Sequence->generate_sound(audio_gen);
+
+    if (right_Sequence) right_Sequence->generate_sound(audio_gen);
+}
+
+void NotesSequence::print() noexcept
+{
+    std::cout << left_Sequence->get_value() << " , " << right_Sequence->get_value() << std::endl;
+}
+
+void NotesSequence::destroy() noexcept
+{
+    if (left_Sequence)
     {
-        right_Statement->destroy();
-        delete right_Statement;
-        right_Statement = nullptr;
+        left_Sequence->destroy();
+        delete left_Sequence;
+        left_Sequence = nullptr;
+    }
+
+    if (right_Sequence)
+    {
+        right_Sequence->destroy();
+        delete right_Sequence;
+        right_Sequence = nullptr;
     }
 }
 
-std::string CompassesComma::get_value() noexcept
+std::string NotesSequence::get_value() noexcept
 {
-    return left_Statement->get_value() + " , " + right_Statement->get_value();
+    return left_Sequence->get_value() + " , " + right_Sequence->get_value();
 }
 
-float CompassesComma::pulse() noexcept
+bool NotesSequence::semantic_analysis(SymbolTable &symbol_table) noexcept
 {
-    left_pulse = left_Statement ? left_Statement->pulse() : 0.0f;
-    right_pulse = right_Statement ? right_Statement->pulse() : 0.0f;
+    if (!time)
+    {   
+        float pulse_total = 0.0f;
+
+        if (left_Sequence)
+        {
+            left_pulse = left_Sequence->pulse();
+        }
+
+        if (right_Sequence)
+        {
+            right_pulse = right_Sequence->pulse();
+        }
+
+        pulse_total = left_pulse + right_pulse;
+
+        if (pulse_total > 4.0f)
+        {
+            return false; 
+        }
+    }
+
+    return true;
+}
+
+void NotesSequence::generate_sound(AudioGenerator &audio_gen) noexcept
+{
+    if (left_Sequence) left_Sequence->generate_sound(audio_gen);
+
+    if (right_Sequence) right_Sequence->generate_sound(audio_gen);
+}
+
+float NotesSequence::pulse() noexcept
+{
+    left_pulse = left_Sequence ? left_Sequence->pulse() : 0.0f; 
+    right_pulse = right_Sequence ? right_Sequence->pulse() : 0.0f;
+
     return left_pulse + right_pulse;
 }
 
-Note::Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_) noexcept
-    : note(note_), alteration(alteration_), duration(duration_), dottes(dottes_)
+Note::Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_, bool time_) noexcept
+    : note(note_), alteration(alteration_), duration(duration_), dottes(dottes_), time(time_)
 {
 }
 
 void Note::print() noexcept
 {
-    if (note) note->print();
-    if (alteration) alteration->print();
-    if (duration) duration->print();
-    if (dottes) dottes->print();
+    std::cout << get_value() << std::endl;
 }
 
 std::string Note::get_value() noexcept
@@ -176,6 +278,28 @@ std::string Note::get_value() noexcept
            (dottes ? dottes->get_value() : "");
 }
 
+bool Note::semantic_analysis(SymbolTable &symbol_table) noexcept
+{
+    if (!time)
+    {
+        float pulse_ = pulse(); 
+        if (pulse_ > 4.0f)
+        {
+            return false; 
+        }
+    }
+
+    return true;
+}
+
+void Note::generate_sound(AudioGenerator &audio_gen) noexcept
+{
+    int midi_note = audio_gen.convert_to_midi(note->get_value());
+    float duration = pulse(); 
+    
+    audio_gen.play_note(midi_note, duration, 100);
+}
+
 float Note::pulse() noexcept
 {
     static std::unordered_map<std::string, float> durations = {
@@ -183,11 +307,6 @@ float Note::pulse() noexcept
     };
 
     auto it = durations.find(duration->get_value());
-    if (it == durations.end())
-    {
-        std::cerr << "Invalid duration: " << duration->get_value() << std::endl;
-        return 0.0f;
-    }
 
     float pulse = it->second;
 
@@ -218,15 +337,9 @@ void Note::destroy() noexcept
     dottes = nullptr;
 }
 
-SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _compass, SymbolTable& symtab)
-    : id(_id), compass(_compass), symtab(symtab)
+SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _measures)
+    : id(_id), measures(_measures)
 {
-    std::string Id = id->get_value();
-
-    if (!symtab.bind(Id, compass))
-    {
-        throw std::runtime_error("Section already defined: " + Id);
-    }
 }
 
 void SectionDeclaration::print() noexcept
@@ -239,9 +352,21 @@ void SectionDeclaration::destroy() noexcept
     delete id;
     id = nullptr;
 
-    compass->destroy();
-    delete compass;
-    compass = nullptr;
+    measures->destroy();
+    delete measures;
+    measures = nullptr;
+}
+
+bool SectionDeclaration::resolve_name(SymbolTable &symbol_table) noexcept
+{
+    std::string id_ = id->get_value();
+
+    if (!symbol_table.bind(id_, measures))
+    {
+        return false; 
+    }
+    
+    return true;
 }
 
 Value::Value(std::string v) noexcept
@@ -266,28 +391,6 @@ void Value::destroy() noexcept
 Time::Time(Statement* pulse_, Statement* figure_, Statement* body_)
     : pulse_(pulse_), figure_(figure_), body(body_)
 {
-    int pulse = std::stoi(pulse_->get_value());
-    int figure = std::stoi(figure_->get_value());
-
-    static std::unordered_map<int, float> FIGURES = {
-        {1, 4}, {2, 2}, {4, 1}, {8, 0.5}, {16, 0.25}
-    };
-
-    if (pulse > 17)
-    {
-        throw std::runtime_error("Invalid pulse:");
-    }
-
-    auto it = FIGURES.find(figure);
-    if (it == FIGURES.end())
-    {
-        throw std::runtime_error("Invalid figure:");
-    }
-
-    if ((it->second * pulse) != body->pulse())
-    {
-        throw std::runtime_error("Uneven pulses in Time");
-    }
 }
 
 void Time::print() noexcept
@@ -310,35 +413,60 @@ void Time::destroy() noexcept
     body = nullptr;
 }
 
-SectionReference::SectionReference(std::string id, SymbolTable& symtab) noexcept
-    : id(id), symtab(symtab)
+bool Time::semantic_analysis(SymbolTable& symbol_table) noexcept
 {
-}
+    int pulse = std::stoi(pulse_->get_value());
+    int figure = std::stoi(figure_->get_value());
 
-Statement* SectionReference::semantic_analysis() noexcept
-{
-    auto resolved = symtab.lookup(id);
+    static std::unordered_map<int, float> FIGURES = {
+        {1, 4}, {2, 2}, {4, 1}, {8, 0.5}, {16, 0.25}
+    };
+    
+    auto it = FIGURES.find(figure);
 
-    if (!resolved)
+    if (it == FIGURES.end())
     {
-        std::runtime_error("Section not defined:"s + id);
-        return nullptr;
+       return false;
     }
 
-    return resolved->body;
+    if (pulse > 12)
+    {
+        return false;
+    }
+
+    if (!body->semantic_analysis(symbol_table))
+    {
+        return false;
+    }
+
+    float pulse__ = body->pulse();   
+
+    if ((it->second * pulse) != pulse__)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool Time::resolve_name(SymbolTable &symbol_table) noexcept
+{
+    return body->resolve_name(symbol_table);
+}
+
+void Time::generate_sound(AudioGenerator &audio_gen) noexcept
+{
+    body->generate_sound(audio_gen);
+}
+
+SectionReference::SectionReference(std::string _id) noexcept
+    : id(_id), measures(nullptr)
+{
 }
 
 void SectionReference::print() noexcept
 {
-    auto resolved = symtab.lookup(id);
-
-    if (!resolved)
-    {
-        std::runtime_error("Section not defined: "s + id);
-        return;
-    }
-
-    resolved->body->print();
+    measures->print();
 }
 
 void SectionReference::destroy() noexcept
@@ -347,37 +475,61 @@ void SectionReference::destroy() noexcept
 
 float SectionReference::pulse() noexcept
 {
-    auto resolved = symtab.lookup(id);
+    return measures->pulse();
+}
+
+bool SectionReference::resolve_name(SymbolTable &symbol_table) noexcept
+{
+    auto resolved = symbol_table.lookup(id);
+
     if (!resolved)
     {
-        return 0.0f;
+        return false; 
     }
 
-    return resolved->body->pulse();
+    measures = resolved->measures;
+    return true;
 }
 
-RepeatDeclaration::RepeatDeclaration(Statement* count, Statement* body) noexcept
-    : repeat_count(count), body(body)
+bool SectionReference::semantic_analysis(SymbolTable &symbol_table) noexcept
 {
+    return measures->semantic_analysis(symbol_table);
 }
 
-void RepeatDeclaration::repeat() noexcept
+void SectionReference::generate_sound(AudioGenerator &audio_gen) noexcept
+{
+    measures->generate_sound(audio_gen);
+}
+
+RepeatDeclaration::RepeatDeclaration(Statement* count, Statement* measures_) noexcept
+    : repeat_count(count), measures(measures_)
 {
 }
 
 void RepeatDeclaration::print() noexcept
 {
-    int count = std::stoi(repeat_count->get_value());
-
-    for (int i = 0; i < count; ++i)
+    for (int i = 0; i < std::stoi(repeat_count->get_value()); ++i)
     {
-        if (body) body->print();
+        if (measures) measures->print();
     }
 }
 
 float RepeatDeclaration::pulse() noexcept
 {
-    return body->pulse();
+    return measures->pulse();
+}
+
+bool RepeatDeclaration::semantic_analysis(SymbolTable& symbol_table) noexcept
+{
+    return measures->semantic_analysis(symbol_table);
+}
+
+void RepeatDeclaration::generate_sound(AudioGenerator &audio_gen) noexcept
+{
+    for (int i = 0; i < std::stoi(repeat_count->get_value()); ++i)
+    {
+        measures->generate_sound(audio_gen);
+    }
 }
 
 void RepeatDeclaration::destroy() noexcept
@@ -386,7 +538,7 @@ void RepeatDeclaration::destroy() noexcept
     delete repeat_count;
     repeat_count = nullptr;
 
-    body->destroy();
-    delete body;
-    body = nullptr;
+    measures->destroy();
+    delete measures;
+    measures = nullptr;
 }

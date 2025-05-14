@@ -1,0 +1,2 @@
+SoundFont/MuseScore_General.sf2 filter=lfs diff=lfs merge=lfs -text
+SoundFont/FluidR3_GM.sf2 filter=lfs diff=lfs merge=lfs -text

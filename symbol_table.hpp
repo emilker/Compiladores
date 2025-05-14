@@ -9,16 +9,13 @@ class Statement;
 class Symbol {
 public:
     std::string name;       
-    Statement* body;      
-    int pulse;              
-    int figure;           
+    Statement* measures;          
         
-    static std::shared_ptr<Symbol> Build(std::string_view name, Statement* body) {
-        return std::make_shared<Symbol>(name, body); // Crea un shared_ptr con nuevo Symbol
+    static std::shared_ptr<Symbol> Build(std::string_view name, Statement* measures) {
+        return std::make_shared<Symbol>(name, measures); // Crea un shared_ptr con nuevo Symbol
     }
         
-
-    Symbol(std::string_view name, Statement* body) : name(name),body(body),pulse(4),figure(4) {}   
+    Symbol(std::string_view name, Statement* measures) : name(name), measures(measures) {}   
 };
 
 class SymbolTable {
@@ -39,7 +36,7 @@ public:
         return true;                   
     }
         
-    bool bind(const std::string& name, Statement* body) {
+    bool bind(const std::string& name, Statement* measures) {
         if(scopes.empty()) return false; // Verifica que haya ámbitos
             
         auto& current = scopes.back(); 
@@ -48,7 +45,7 @@ public:
         if(current.find(name) != current.end()) return false; 
             
         // Registra el nuevo símbolo
-        current[name] = Symbol::Build(name, body);
+        current[name] = Symbol::Build(name, measures);
         return true; 
     }
         

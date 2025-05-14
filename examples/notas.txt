@@ -1,9 +1,7 @@
-time 3/4
-{
+
 	repeat 2 {
-	    G4 q., A4 e, G4 q | E4 h. 
+	    G4 q., A4 e, G4 e | E4 h 
 	}
 
-	D5 h, D5 q | B4 h.        
-	C5 h, C5 q | G4 h.      
-}
+	D5 q, D5 q | B4 q.        
+	C5 q, C5 e | G4 q.      

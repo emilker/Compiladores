@@ -2,7 +2,7 @@ time 3/4
 {
 -h, E5 e, D5 #e | E5 e, D5 #e, E5 e, B4 e, D5 e, C5 e
 
-A4 e, E4 e, A4 e, C4 e, E4 e, A4 e | B4 e, E4 e, G4 #e, E4 e, G4 e, B4 e
+A4 e, E4 e, A4 e, C4 e, E4 e, A4 e | B4 e, E4 e, E4# e, G4 #e, E4 e, G4 e, B4 e
 
 C5 e, E4 e, A4 e, E4 e, E5 e, D5 #e| E5 e, D5 #e, E5 e, A4 e, D5 e, C5 e
 
