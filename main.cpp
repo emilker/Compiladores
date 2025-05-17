@@ -60,8 +60,8 @@ int main(int argc, char* argv[])
         
         AudioGenerator audio_gen;
         audio_gen.start_recording("Melodia.wav");
-        parser_result->generate_sound(audio_gen);
-        audio_gen.stop_recording();
+        parser_result->generate_sound(audio_gen);  // agrega notas
+        audio_gen.stop_recording();  
 
         parser_result->print();
     }

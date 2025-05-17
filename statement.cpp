@@ -291,14 +291,30 @@ bool Note::semantic_analysis(SymbolTable &symbol_table) noexcept
 
     return true;
 }
-
+/*
 void Note::generate_sound(AudioGenerator &audio_gen) noexcept
 {
     int midi_note = audio_gen.convert_to_midi(note->get_value());
     float duration = pulse(); 
     
     audio_gen.play_note(midi_note, duration, 100);
+}*/
+/*
+void Note::generate_sound(AudioGenerator &audio_gen)
+{
+    int midi_note = audio_gen.convert_to_midi(note->get_value());
+    float beats = pulse(); // la duración ahora representa beats
+    audio_gen.add_note(midi_note, beats);
+}*/
+
+void Note::generate_sound(AudioGenerator &audio_gen) noexcept
+{
+    std::string note_name = note->get_value(); // El valor como "C4", "D#5", etc.
+    float beats = pulse(); // Duración en beats (figura rítmica)
+
+    audio_gen.play_note(note_name, beats); // Usamos el nuevo método play_note
 }
+
 
 float Note::pulse() noexcept
 {
