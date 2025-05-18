@@ -291,21 +291,6 @@ bool Note::semantic_analysis(SymbolTable &symbol_table) noexcept
 
     return true;
 }
-/*
-void Note::generate_sound(AudioGenerator &audio_gen) noexcept
-{
-    int midi_note = audio_gen.convert_to_midi(note->get_value());
-    float duration = pulse(); 
-    
-    audio_gen.play_note(midi_note, duration, 100);
-}*/
-/*
-void Note::generate_sound(AudioGenerator &audio_gen)
-{
-    int midi_note = audio_gen.convert_to_midi(note->get_value());
-    float beats = pulse(); // la duración ahora representa beats
-    audio_gen.add_note(midi_note, beats);
-}*/
 
 void Note::generate_sound(AudioGenerator &audio_gen) noexcept
 {
@@ -474,6 +459,89 @@ void Time::generate_sound(AudioGenerator &audio_gen) noexcept
 {
     body->generate_sound(audio_gen);
 }
+
+Tempo::Tempo(Statement* FIGURE, Statement* BPM)
+    : figure_{FIGURE}, bpm_{BPM}
+{
+}
+
+void Tempo::destroy() noexcept
+{
+    if (bpm_) 
+    {
+        bpm_->destroy();
+        delete bpm_;
+        bpm_ = nullptr;
+    }
+
+    if (figure_) 
+    {
+        figure_->destroy();
+        delete figure_;
+        figure_ = nullptr;
+    }
+}
+
+void Tempo::print() noexcept
+{
+    if (figure_ && bpm_) 
+    {
+        std::cout << "Tempo: " << figure_->get_value() << " = " << BPM_ << std::endl;
+    } 
+    else 
+    {
+        std::cout << "Tempo: [invalid]" << std::endl;
+    }
+}
+
+bool Tempo::semantic_analysis(SymbolTable& symbol_table) noexcept
+{
+    if (!figure_ || !bpm_) return false;
+
+    std::string figure = figure_->get_value();
+    std::string bpm_str = bpm_->get_value();
+
+    if (figure.empty() || bpm_str.empty()) return false;
+
+    // Mapa de equivalencias de figuras
+    static const std::unordered_map<char, float> FIGURE_TO_MULTIPLIER = {
+        {'w', 4.0f}, {'h', 2.0f}, {'q', 1.0f},
+        {'e', 0.5f}, {'s', 0.25f}
+    };
+
+    char figure_char = figure[0];
+
+    auto it = FIGURE_TO_MULTIPLIER.find(figure_char);
+    if (it == FIGURE_TO_MULTIPLIER.end()) 
+    {
+        std::cerr << "Error: Figura de nota no válida en tempo: " << figure_char << std::endl;
+        return false;
+    }
+
+    try 
+    {
+        BPM_ = std::stod(bpm_str);
+    } 
+    catch (...) 
+    {
+        std::cerr << "Error: Valor de BPM inválido: " << bpm_str << std::endl;
+        return false;
+    }
+
+    BPM_ *= it->second;
+    return true;
+}
+
+void Tempo::generate_sound(AudioGenerator& audio_gen) noexcept
+{
+    audio_gen.set_tempo(BPM_);
+}
+
+bool Tempo::resolve_name(SymbolTable& symbol_table) noexcept
+{
+    return figure_->resolve_name(symbol_table) && bpm_->resolve_name(symbol_table);
+}
+
 
 SectionReference::SectionReference(std::string _id) noexcept
     : id(_id), measures(nullptr)

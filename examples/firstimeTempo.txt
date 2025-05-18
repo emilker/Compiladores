@@ -1,0 +1,4 @@
+time 3/4
+{
+G4 q, A4 q, B4 q | C5 q, D5 q, E5 q
+}

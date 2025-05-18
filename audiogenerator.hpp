@@ -28,7 +28,7 @@ private:
     static const std::unordered_map<std::string, int> KeyToMidi;
     std::vector<SoundFrequencies> notes;
     std::string output_path;
-    double bpm = 160.0; // default
+    double bpm = 120.0; // default
     int sample_rate;
 
     fluid_settings_t* settings;

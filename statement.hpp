@@ -148,7 +148,26 @@ private:
     Statement* figure_;
     Statement* body;
 };
- 
+
+class Tempo :  public Statement
+{
+public:
+    Tempo(Statement* FIGURE, Statement* BPM);
+
+    void print() noexcept;
+    void destroy() noexcept;
+    float pulse() noexcept override { return static_cast<float>(BPM_); }
+
+    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
+    bool resolve_name(SymbolTable& symbol_table) noexcept;
+    void generate_sound(AudioGenerator& audio_gen) noexcept override;
+
+private:
+    Statement* figure_;
+    Statement* bpm_;
+    double BPM_;
+};
+
 class SectionReference : public Statement 
 {
 public:

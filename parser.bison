@@ -14,7 +14,8 @@ Statement* parser_result{nullptr};
 
 std::stack<bool> time_active_stack;
 
-bool is_time_active() {
+bool is_time_active() 
+{
     return !time_active_stack.empty() && time_active_stack.top();
 }
 
@@ -22,6 +23,8 @@ bool is_time_active() {
 
 %token TOKEN_EOF
 %token TOKEN_TIME
+%token TOKEN_TEMPO
+%token TOKEN_EQUALS
 %token TOKEN_NOTE
 %token TOKEN_ALTERATION
 %token TOKEN_DURATION
@@ -46,8 +49,11 @@ bool is_time_active() {
 %token TOKEN_DOTTED
 
 %%
-program : statement                                                                  { parser_result = $1; }
-        ;                                              
+program : statement                          { parser_result = $1; }
+        | tempo statement                    { parser_result = new StatementSequence($1, $2); }
+        ;
+
+                                             
 statement : compasses statement                                                      { $$ = new StatementSequence($1, $2); }
           | section statement                                                        { $$ = new StatementSequence($1, $2); }
           | time statement                                                           { $$ = new StatementSequence($1, $2); }
@@ -59,11 +65,15 @@ statement : compasses statement                                                 
           ;          
 
 time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE { time_active_stack.push(true); } body TOKEN_RBRACE      {   $$ = new Time($2, $4, $7);
-                                                                                                                    if (!time_active_stack.empty()) {
+                                                                                                                    if (!time_active_stack.empty()) 
+                                                                                                                    {
                                                                                                                         time_active_stack.pop(); 
                                                                                                                     }
                                                                                                                 }
      ;
+
+tempo : TOKEN_TEMPO duration TOKEN_EQUALS digit                                      {$$ = new Tempo($2, $4);}
+
 
 section : TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                       { $$ = new SectionDeclaration($2, $4); }
         | TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                     { $$ = new RepeatDeclaration($2, $4); }                                                         
