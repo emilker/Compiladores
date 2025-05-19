@@ -3,6 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <thread>
+#include <chrono>
 
 AudioGenerator::AudioGenerator(int sample_rate)
     : sample_rate(sample_rate), synth(nullptr), settings(nullptr)
@@ -40,9 +42,9 @@ void AudioGenerator::start_recording(const std::string& wav_filename)
     output_path = wav_filename;
 }
 
-void AudioGenerator::play_note(const std::string& name, double beats)
+void AudioGenerator::play_note(const std::vector<std::string>& note_names, double beats)
 {
-    notes.push_back({name, beats});
+    notes.push_back({note_names, beats});
 }
 
 void AudioGenerator::stop_recording()
@@ -50,40 +52,52 @@ void AudioGenerator::stop_recording()
     double seconds_per_beat = 60.0 / bpm;
     double total_seconds = 0.0;
 
-    for (const auto& note : notes)
+    // Calcular duración total para reservar buffer
+    for (const auto& note_event : notes)
     {
-        total_seconds += note.beats * seconds_per_beat;
+        total_seconds += note_event.beats * seconds_per_beat;
     }
 
     int total_frames = static_cast<int>(sample_rate * total_seconds);
-    std::vector<short> buffer(total_frames * 2, 0); // Estéreo
+    std::vector<short> buffer(total_frames * 2, 0); // estéreo
 
     int frame_index = 0;
     int channel = 0;
     int velocity = 100;
 
-    for (const auto& note : notes)
+    for (const auto& note_event : notes)
     {
-        int midi_note = convert_to_midi(note.name);
-        int frames_for_note = static_cast<int>(note.beats * seconds_per_beat * sample_rate);
+        int frames_for_event = static_cast<int>(note_event.beats * seconds_per_beat * sample_rate);
 
-        if (midi_note != -1)
+        // Encender todas las notas del acorde simultáneamente
+        std::vector<int> midi_notes;
+        for (const std::string& note_name : note_event.note_names)
         {
-            fluid_synth_noteon(synth, channel, midi_note, velocity);
+            int midi_note = convert_to_midi(note_name);
+            if (midi_note != -1)
+            {
+                midi_notes.push_back(midi_note);
+                fluid_synth_noteon(synth, channel, midi_note, velocity);
+            }
+            else
+            {
+                std::cerr << "⚠️ Nota desconocida: " << note_name << "\n";
+            }
         }
 
+        // Escribir audio para el evento (acorde o nota simple)
         fluid_synth_write_s16(
-            synth, frames_for_note,
+            synth, frames_for_event,
             &buffer[frame_index * 2], 0, 2,
-            &buffer[frame_index * 2], 1, 2
-        );
+            &buffer[frame_index * 2], 1, 2);
 
-        if (midi_note != -1)
+        // Apagar notas
+        for (int midi_note : midi_notes)
         {
             fluid_synth_noteoff(synth, channel, midi_note);
         }
 
-        frame_index += frames_for_note;
+        frame_index += frames_for_event;
     }
 
     write_wav(output_path, buffer, sample_rate);
@@ -133,6 +147,7 @@ int AudioGenerator::convert_to_midi(const std::string& nota) const
     else
         return -1; // Nota no encontrada
 }
+
 
 void AudioGenerator::write_wav(const std::string& filename, const std::vector<short>& buffer, int sample_rate)
 {

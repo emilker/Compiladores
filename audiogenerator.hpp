@@ -6,7 +6,7 @@
 #include <unordered_map>
 struct SoundFrequencies 
 {
-    std::string name;
+    std::vector<std::string> note_names; 
     double beats;
 };
 
@@ -19,10 +19,12 @@ public:
     bool load_soundfont(const std::string& path);
     void start_recording(const std::string& wav_filename);
     void stop_recording();
-    void play_note(const std::string& name, double beats);
+    void play_note(const std::vector<std::string>& notes, double beats);
     void set_tempo(double bpm);
     void write_wav(const std::string& filename, const std::vector<short>& buffer, int sample_rate);    
     int convert_to_midi(const std::string& nota) const;
+    
+
 
 private:
     static const std::unordered_map<std::string, int> KeyToMidi;
@@ -30,6 +32,7 @@ private:
     std::string output_path;
     double bpm = 120.0; // default
     int sample_rate;
+
 
     fluid_settings_t* settings;
     fluid_synth_t* synth;
