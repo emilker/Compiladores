@@ -14,8 +14,8 @@ public:
     virtual ~Statement();
     virtual void destroy() noexcept = 0;
     virtual float pulse() noexcept = 0;
-    virtual bool semantic_analysis() {return true;};
-    virtual bool resolve_name(SymbolTable& symbol_table) {return true;};
+    virtual bool semantic_analysis() noexcept {return true;};
+    virtual bool resolve_name(SymbolTable& symbol_table) noexcept {return true;};
     virtual std::string get_value() noexcept { return ""; }
     virtual void generate_sound(AudioGenerator& audio_gen) {};
     
@@ -29,7 +29,7 @@ public:
     void destroy() noexcept override;
     float pulse() noexcept override;
     bool semantic_analysis() noexcept;
-    bool resolve_name(SymbolTable& symbol_table) noexcept;
+    bool resolve_name(SymbolTable& symbol_table) noexcept override;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
 
 private:
@@ -45,7 +45,9 @@ public:
     void destroy() noexcept override;
     float pulse() noexcept = 0;
     std::string get_value() noexcept = 0;
-    
+    Statement* get_r() const noexcept { return right_Sequence; }
+    Statement* get_l() const noexcept { return left_Sequence; }
+
 protected:
     Statement* left_Sequence;
     Statement* right_Sequence;
@@ -62,7 +64,7 @@ public:
     float pulse() noexcept override;
     void destroy() noexcept override;
     std::string get_value() noexcept override;
-    bool semantic_analysis() noexcept;
+    bool semantic_analysis() noexcept override;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
 };
  
@@ -74,7 +76,7 @@ public:
     float pulse() noexcept override;
     void destroy() noexcept override;
     std::string get_value() noexcept override;
-    bool semantic_analysis() noexcept;
+    bool semantic_analysis() noexcept override;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
 };
 
@@ -86,7 +88,7 @@ public:
     float pulse() noexcept override;
     void destroy() noexcept override;
     std::string get_value() noexcept override;
-    bool semantic_analysis() noexcept;
+    bool semantic_analysis() noexcept override;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
  
 private:
@@ -131,8 +133,8 @@ public:
  
     void destroy() noexcept override;
     float pulse() noexcept override { return 1000; }
-    bool semantic_analysis() noexcept;
-    bool resolve_name(SymbolTable& symbol_table) noexcept;
+    bool semantic_analysis() noexcept override;
+    bool resolve_name(SymbolTable& symbol_table) noexcept override;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
  
 private:
@@ -148,8 +150,8 @@ public:
  
     void destroy() noexcept override;
     float pulse() noexcept override;
-    bool resolve_name(SymbolTable& symbol_table) noexcept;
-    bool semantic_analysis() noexcept;
+    bool resolve_name(SymbolTable& symbol_table) noexcept override;
+    bool semantic_analysis() noexcept override;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
  
 private:
@@ -170,6 +172,41 @@ public:
 private:
     Statement* repeat_count;
     Statement* measures;
+};
+
+class Chord : public Statement 
+{
+public:
+    Chord(Statement* notes_, Statement* duration_);
+    
+    float pulse() noexcept override;
+    void destroy() noexcept override;
+    std::string get_value() noexcept override;
+    bool semantic_analysis() noexcept override;
+    void generate_sound(AudioGenerator& audio_gen) noexcept override;
+    
+private:
+    Statement* notes; // Las notas que conforman el acorde
+    Statement* duration_stmt = nullptr;
+    
+};
+
+class Tempo :  public Statement
+{
+public:
+    Tempo(Statement* FIGURE, Statement* BPM);
+
+    void destroy() noexcept;
+    float pulse() noexcept override { return static_cast<float>(BPM_); }
+
+    bool semantic_analysis() noexcept override;
+    bool resolve_name(SymbolTable& symbol_table) noexcept override;
+    void generate_sound(AudioGenerator& audio_gen) noexcept override;
+
+private:
+    Statement* figure_;
+    Statement* bpm_;
+    double BPM_;
 };
 
 #endif // STATEMENT_HPP

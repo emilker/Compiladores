@@ -1,0 +1,914 @@
+Terminales no usados en la gramática
+
+    TOKEN_EOF
+    TOKEN_SEMICOLON
+    TOKEN_LPAREN
+    TOKEN_RPAREN
+    TOKEN_PIPE
+    TOKEN_POINT
+    TOKEN_UNKNOWN
+
+
+Estado 18 conflictos: 2 reducción/reducción
+
+
+Gramática
+
+    0 $accept: program $end
+
+    1 program: statement
+    2        | tempo statement
+
+    3 statement: compasses statement
+    4          | section statement
+    5          | time statement
+    6          | idReference statement
+    7          | section
+    8          | idReference
+    9          | time
+   10          | compasses
+   11          | chord
+
+   12 $@1: ε
+
+   13 time: TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE $@1 body TOKEN_RBRACE
+
+   14 tempo: TOKEN_TEMPO duration TOKEN_EQUALS digit
+
+   15 section: TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE
+   16        | TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE
+
+   17 digit: TOKEN_DIGIT
+
+   18 id: TOKEN_IDENTIFIER
+
+   19 idReference: TOKEN_IDENTIFIER
+
+   20 compasses: compasses TOKEN_BAR_LINE notes
+   21          | notes
+
+   22 note_or_chord: note
+   23              | chord
+
+   24 notes: notes TOKEN_COMMA note_or_chord
+   25      | note_or_chord
+
+   26 chordnote: notename
+   27          | notename alteration
+
+   28 chordnotes: chordnotes TOKEN_COMMA chordnote
+   29           | chordnote
+
+   30 chord: TOKEN_LBRACKET chordnotes TOKEN_RBRACKET duration
+
+   31 note: notename duration
+   32     | notename duration dotted
+   33     | notename alteration duration
+   34     | notename alteration duration dotted
+
+   35 notename: TOKEN_NOTE
+   36         | TOKEN_REST
+
+   37 duration: TOKEN_DURATION
+
+   38 alteration: TOKEN_ALTERATION
+
+   39 dotted: TOKEN_DOTTED
+
+   40 body: statement
+
+
+Terminales con las reglas donde aparecen
+
+    $end (0) 0
+    error (256)
+    TOKEN_EOF (258)
+    TOKEN_TIME (259) 13
+    TOKEN_TEMPO (260) 14
+    TOKEN_EQUALS (261) 14
+    TOKEN_NOTE (262) 35
+    TOKEN_ALTERATION (263) 38
+    TOKEN_DURATION (264) 37
+    TOKEN_SECTION (265) 15
+    TOKEN_REPEAT (266) 16
+    TOKEN_DIGIT (267) 17
+    TOKEN_COMMA (268) 24 28
+    TOKEN_SEMICOLON (269)
+    TOKEN_LPAREN (270)
+    TOKEN_RPAREN (271)
+    TOKEN_LBRACKET (272) 30
+    TOKEN_RBRACKET (273) 30
+    TOKEN_PIPE (274)
+    TOKEN_SLASH (275) 13
+    TOKEN_LBRACE (276) 13 15 16
+    TOKEN_RBRACE (277) 13 15 16
+    TOKEN_IDENTIFIER (278) 18 19
+    TOKEN_BAR_LINE (279) 20
+    TOKEN_REST (280) 36
+    TOKEN_POINT (281)
+    TOKEN_UNKNOWN (282)
+    TOKEN_DOTTED (283) 39
+
+
+No terminales con las reglas donde aparecen
+
+    $accept (29)
+        on left: 0
+    program (30)
+        on left: 1 2
+        on right: 0
+    statement (31)
+        on left: 3 4 5 6 7 8 9 10 11
+        on right: 1 2 3 4 5 6 40
+    time (32)
+        on left: 13
+        on right: 5 9
+    $@1 (33)
+        on left: 12
+        on right: 13
+    tempo (34)
+        on left: 14
+        on right: 2
+    section (35)
+        on left: 15 16
+        on right: 4 7
+    digit (36)
+        on left: 17
+        on right: 13 14 16
+    id (37)
+        on left: 18
+        on right: 15
+    idReference (38)
+        on left: 19
+        on right: 6 8
+    compasses (39)
+        on left: 20 21
+        on right: 3 10 15 16 20
+    note_or_chord (40)
+        on left: 22 23
+        on right: 24 25
+    notes (41)
+        on left: 24 25
+        on right: 20 21 24
+    chordnote (42)
+        on left: 26 27
+        on right: 28 29
+    chordnotes (43)
+        on left: 28 29
+        on right: 28 30
+    chord (44)
+        on left: 30
+        on right: 11 23
+    note (45)
+        on left: 31 32 33 34
+        on right: 22
+    notename (46)
+        on left: 35 36
+        on right: 26 27 31 32 33 34
+    duration (47)
+        on left: 37
+        on right: 14 30 31 32 33 34
+    alteration (48)
+        on left: 38
+        on right: 27 33 34
+    dotted (49)
+        on left: 39
+        on right: 32 34
+    body (50)
+        on left: 40
+        on right: 13
+
+
+Estado 0
+
+    0 $accept: • program $end
+
+    TOKEN_TIME        desplazar e ir al estado 1
+    TOKEN_TEMPO       desplazar e ir al estado 2
+    TOKEN_NOTE        desplazar e ir al estado 3
+    TOKEN_SECTION     desplazar e ir al estado 4
+    TOKEN_REPEAT      desplazar e ir al estado 5
+    TOKEN_LBRACKET    desplazar e ir al estado 6
+    TOKEN_IDENTIFIER  desplazar e ir al estado 7
+    TOKEN_REST        desplazar e ir al estado 8
+
+    program        ir al estado 9
+    statement      ir al estado 10
+    time           ir al estado 11
+    tempo          ir al estado 12
+    section        ir al estado 13
+    idReference    ir al estado 14
+    compasses      ir al estado 15
+    note_or_chord  ir al estado 16
+    notes          ir al estado 17
+    chord          ir al estado 18
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 1
+
+   13 time: TOKEN_TIME • digit TOKEN_SLASH digit TOKEN_LBRACE $@1 body TOKEN_RBRACE
+
+    TOKEN_DIGIT  desplazar e ir al estado 21
+
+    digit  ir al estado 22
+
+
+Estado 2
+
+   14 tempo: TOKEN_TEMPO • duration TOKEN_EQUALS digit
+
+    TOKEN_DURATION  desplazar e ir al estado 23
+
+    duration  ir al estado 24
+
+
+Estado 3
+
+   35 notename: TOKEN_NOTE •
+
+    $default  reduce usando la regla 35 (notename)
+
+
+Estado 4
+
+   15 section: TOKEN_SECTION • id TOKEN_LBRACE compasses TOKEN_RBRACE
+
+    TOKEN_IDENTIFIER  desplazar e ir al estado 25
+
+    id  ir al estado 26
+
+
+Estado 5
+
+   16 section: TOKEN_REPEAT • digit TOKEN_LBRACE compasses TOKEN_RBRACE
+
+    TOKEN_DIGIT  desplazar e ir al estado 21
+
+    digit  ir al estado 27
+
+
+Estado 6
+
+   30 chord: TOKEN_LBRACKET • chordnotes TOKEN_RBRACKET duration
+
+    TOKEN_NOTE  desplazar e ir al estado 3
+    TOKEN_REST  desplazar e ir al estado 8
+
+    chordnote   ir al estado 28
+    chordnotes  ir al estado 29
+    notename    ir al estado 30
+
+
+Estado 7
+
+   19 idReference: TOKEN_IDENTIFIER •
+
+    $default  reduce usando la regla 19 (idReference)
+
+
+Estado 8
+
+   36 notename: TOKEN_REST •
+
+    $default  reduce usando la regla 36 (notename)
+
+
+Estado 9
+
+    0 $accept: program • $end
+
+    $end  desplazar e ir al estado 31
+
+
+Estado 10
+
+    1 program: statement •
+
+    $default  reduce usando la regla 1 (program)
+
+
+Estado 11
+
+    5 statement: time • statement
+    9          | time •
+
+    TOKEN_TIME        desplazar e ir al estado 1
+    TOKEN_NOTE        desplazar e ir al estado 3
+    TOKEN_SECTION     desplazar e ir al estado 4
+    TOKEN_REPEAT      desplazar e ir al estado 5
+    TOKEN_LBRACKET    desplazar e ir al estado 6
+    TOKEN_IDENTIFIER  desplazar e ir al estado 7
+    TOKEN_REST        desplazar e ir al estado 8
+
+    $default  reduce usando la regla 9 (statement)
+
+    statement      ir al estado 32
+    time           ir al estado 11
+    section        ir al estado 13
+    idReference    ir al estado 14
+    compasses      ir al estado 15
+    note_or_chord  ir al estado 16
+    notes          ir al estado 17
+    chord          ir al estado 18
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 12
+
+    2 program: tempo • statement
+
+    TOKEN_TIME        desplazar e ir al estado 1
+    TOKEN_NOTE        desplazar e ir al estado 3
+    TOKEN_SECTION     desplazar e ir al estado 4
+    TOKEN_REPEAT      desplazar e ir al estado 5
+    TOKEN_LBRACKET    desplazar e ir al estado 6
+    TOKEN_IDENTIFIER  desplazar e ir al estado 7
+    TOKEN_REST        desplazar e ir al estado 8
+
+    statement      ir al estado 33
+    time           ir al estado 11
+    section        ir al estado 13
+    idReference    ir al estado 14
+    compasses      ir al estado 15
+    note_or_chord  ir al estado 16
+    notes          ir al estado 17
+    chord          ir al estado 18
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 13
+
+    4 statement: section • statement
+    7          | section •
+
+    TOKEN_TIME        desplazar e ir al estado 1
+    TOKEN_NOTE        desplazar e ir al estado 3
+    TOKEN_SECTION     desplazar e ir al estado 4
+    TOKEN_REPEAT      desplazar e ir al estado 5
+    TOKEN_LBRACKET    desplazar e ir al estado 6
+    TOKEN_IDENTIFIER  desplazar e ir al estado 7
+    TOKEN_REST        desplazar e ir al estado 8
+
+    $default  reduce usando la regla 7 (statement)
+
+    statement      ir al estado 34
+    time           ir al estado 11
+    section        ir al estado 13
+    idReference    ir al estado 14
+    compasses      ir al estado 15
+    note_or_chord  ir al estado 16
+    notes          ir al estado 17
+    chord          ir al estado 18
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 14
+
+    6 statement: idReference • statement
+    8          | idReference •
+
+    TOKEN_TIME        desplazar e ir al estado 1
+    TOKEN_NOTE        desplazar e ir al estado 3
+    TOKEN_SECTION     desplazar e ir al estado 4
+    TOKEN_REPEAT      desplazar e ir al estado 5
+    TOKEN_LBRACKET    desplazar e ir al estado 6
+    TOKEN_IDENTIFIER  desplazar e ir al estado 7
+    TOKEN_REST        desplazar e ir al estado 8
+
+    $default  reduce usando la regla 8 (statement)
+
+    statement      ir al estado 35
+    time           ir al estado 11
+    section        ir al estado 13
+    idReference    ir al estado 14
+    compasses      ir al estado 15
+    note_or_chord  ir al estado 16
+    notes          ir al estado 17
+    chord          ir al estado 18
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 15
+
+    3 statement: compasses • statement
+   10          | compasses •
+   20 compasses: compasses • TOKEN_BAR_LINE notes
+
+    TOKEN_TIME        desplazar e ir al estado 1
+    TOKEN_NOTE        desplazar e ir al estado 3
+    TOKEN_SECTION     desplazar e ir al estado 4
+    TOKEN_REPEAT      desplazar e ir al estado 5
+    TOKEN_LBRACKET    desplazar e ir al estado 6
+    TOKEN_IDENTIFIER  desplazar e ir al estado 7
+    TOKEN_BAR_LINE    desplazar e ir al estado 36
+    TOKEN_REST        desplazar e ir al estado 8
+
+    $default  reduce usando la regla 10 (statement)
+
+    statement      ir al estado 37
+    time           ir al estado 11
+    section        ir al estado 13
+    idReference    ir al estado 14
+    compasses      ir al estado 15
+    note_or_chord  ir al estado 16
+    notes          ir al estado 17
+    chord          ir al estado 18
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 16
+
+   25 notes: note_or_chord •
+
+    $default  reduce usando la regla 25 (notes)
+
+
+Estado 17
+
+   21 compasses: notes •
+   24 notes: notes • TOKEN_COMMA note_or_chord
+
+    TOKEN_COMMA  desplazar e ir al estado 38
+
+    $default  reduce usando la regla 21 (compasses)
+
+
+Estado 18
+
+   11 statement: chord •
+   23 note_or_chord: chord •
+
+    $end          reduce usando la regla 11 (statement)
+    $end          [reduce usando la regla 23 (note_or_chord)]
+    TOKEN_RBRACE  reduce usando la regla 11 (statement)
+    TOKEN_RBRACE  [reduce usando la regla 23 (note_or_chord)]
+    $default      reduce usando la regla 23 (note_or_chord)
+
+    reduce/reduce conflict on tokens $end, TOKEN_RBRACE:
+       11 statement: chord •
+       23 note_or_chord: chord •
+      Example: chord •
+      First reduce derivation
+        statement
+        ↳ 11: chord •
+      Second reduce derivation
+        statement
+        ↳ 10: compasses
+              ↳ 21: notes
+                    ↳ 25: note_or_chord
+                          ↳ 23: chord •
+
+
+
+Estado 19
+
+   22 note_or_chord: note •
+
+    $default  reduce usando la regla 22 (note_or_chord)
+
+
+Estado 20
+
+   31 note: notename • duration
+   32     | notename • duration dotted
+   33     | notename • alteration duration
+   34     | notename • alteration duration dotted
+
+    TOKEN_ALTERATION  desplazar e ir al estado 39
+    TOKEN_DURATION    desplazar e ir al estado 23
+
+    duration    ir al estado 40
+    alteration  ir al estado 41
+
+
+Estado 21
+
+   17 digit: TOKEN_DIGIT •
+
+    $default  reduce usando la regla 17 (digit)
+
+
+Estado 22
+
+   13 time: TOKEN_TIME digit • TOKEN_SLASH digit TOKEN_LBRACE $@1 body TOKEN_RBRACE
+
+    TOKEN_SLASH  desplazar e ir al estado 42
+
+
+Estado 23
+
+   37 duration: TOKEN_DURATION •
+
+    $default  reduce usando la regla 37 (duration)
+
+
+Estado 24
+
+   14 tempo: TOKEN_TEMPO duration • TOKEN_EQUALS digit
+
+    TOKEN_EQUALS  desplazar e ir al estado 43
+
+
+Estado 25
+
+   18 id: TOKEN_IDENTIFIER •
+
+    $default  reduce usando la regla 18 (id)
+
+
+Estado 26
+
+   15 section: TOKEN_SECTION id • TOKEN_LBRACE compasses TOKEN_RBRACE
+
+    TOKEN_LBRACE  desplazar e ir al estado 44
+
+
+Estado 27
+
+   16 section: TOKEN_REPEAT digit • TOKEN_LBRACE compasses TOKEN_RBRACE
+
+    TOKEN_LBRACE  desplazar e ir al estado 45
+
+
+Estado 28
+
+   29 chordnotes: chordnote •
+
+    $default  reduce usando la regla 29 (chordnotes)
+
+
+Estado 29
+
+   28 chordnotes: chordnotes • TOKEN_COMMA chordnote
+   30 chord: TOKEN_LBRACKET chordnotes • TOKEN_RBRACKET duration
+
+    TOKEN_COMMA     desplazar e ir al estado 46
+    TOKEN_RBRACKET  desplazar e ir al estado 47
+
+
+Estado 30
+
+   26 chordnote: notename •
+   27          | notename • alteration
+
+    TOKEN_ALTERATION  desplazar e ir al estado 39
+
+    $default  reduce usando la regla 26 (chordnote)
+
+    alteration  ir al estado 48
+
+
+Estado 31
+
+    0 $accept: program $end •
+
+    $default  aceptar
+
+
+Estado 32
+
+    5 statement: time statement •
+
+    $default  reduce usando la regla 5 (statement)
+
+
+Estado 33
+
+    2 program: tempo statement •
+
+    $default  reduce usando la regla 2 (program)
+
+
+Estado 34
+
+    4 statement: section statement •
+
+    $default  reduce usando la regla 4 (statement)
+
+
+Estado 35
+
+    6 statement: idReference statement •
+
+    $default  reduce usando la regla 6 (statement)
+
+
+Estado 36
+
+   20 compasses: compasses TOKEN_BAR_LINE • notes
+
+    TOKEN_NOTE      desplazar e ir al estado 3
+    TOKEN_LBRACKET  desplazar e ir al estado 6
+    TOKEN_REST      desplazar e ir al estado 8
+
+    note_or_chord  ir al estado 16
+    notes          ir al estado 49
+    chord          ir al estado 50
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 37
+
+    3 statement: compasses statement •
+
+    $default  reduce usando la regla 3 (statement)
+
+
+Estado 38
+
+   24 notes: notes TOKEN_COMMA • note_or_chord
+
+    TOKEN_NOTE      desplazar e ir al estado 3
+    TOKEN_LBRACKET  desplazar e ir al estado 6
+    TOKEN_REST      desplazar e ir al estado 8
+
+    note_or_chord  ir al estado 51
+    chord          ir al estado 50
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 39
+
+   38 alteration: TOKEN_ALTERATION •
+
+    $default  reduce usando la regla 38 (alteration)
+
+
+Estado 40
+
+   31 note: notename duration •
+   32     | notename duration • dotted
+
+    TOKEN_DOTTED  desplazar e ir al estado 52
+
+    $default  reduce usando la regla 31 (note)
+
+    dotted  ir al estado 53
+
+
+Estado 41
+
+   33 note: notename alteration • duration
+   34     | notename alteration • duration dotted
+
+    TOKEN_DURATION  desplazar e ir al estado 23
+
+    duration  ir al estado 54
+
+
+Estado 42
+
+   13 time: TOKEN_TIME digit TOKEN_SLASH • digit TOKEN_LBRACE $@1 body TOKEN_RBRACE
+
+    TOKEN_DIGIT  desplazar e ir al estado 21
+
+    digit  ir al estado 55
+
+
+Estado 43
+
+   14 tempo: TOKEN_TEMPO duration TOKEN_EQUALS • digit
+
+    TOKEN_DIGIT  desplazar e ir al estado 21
+
+    digit  ir al estado 56
+
+
+Estado 44
+
+   15 section: TOKEN_SECTION id TOKEN_LBRACE • compasses TOKEN_RBRACE
+
+    TOKEN_NOTE      desplazar e ir al estado 3
+    TOKEN_LBRACKET  desplazar e ir al estado 6
+    TOKEN_REST      desplazar e ir al estado 8
+
+    compasses      ir al estado 57
+    note_or_chord  ir al estado 16
+    notes          ir al estado 17
+    chord          ir al estado 50
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 45
+
+   16 section: TOKEN_REPEAT digit TOKEN_LBRACE • compasses TOKEN_RBRACE
+
+    TOKEN_NOTE      desplazar e ir al estado 3
+    TOKEN_LBRACKET  desplazar e ir al estado 6
+    TOKEN_REST      desplazar e ir al estado 8
+
+    compasses      ir al estado 58
+    note_or_chord  ir al estado 16
+    notes          ir al estado 17
+    chord          ir al estado 50
+    note           ir al estado 19
+    notename       ir al estado 20
+
+
+Estado 46
+
+   28 chordnotes: chordnotes TOKEN_COMMA • chordnote
+
+    TOKEN_NOTE  desplazar e ir al estado 3
+    TOKEN_REST  desplazar e ir al estado 8
+
+    chordnote  ir al estado 59
+    notename   ir al estado 30
+
+
+Estado 47
+
+   30 chord: TOKEN_LBRACKET chordnotes TOKEN_RBRACKET • duration
+
+    TOKEN_DURATION  desplazar e ir al estado 23
+
+    duration  ir al estado 60
+
+
+Estado 48
+
+   27 chordnote: notename alteration •
+
+    $default  reduce usando la regla 27 (chordnote)
+
+
+Estado 49
+
+   20 compasses: compasses TOKEN_BAR_LINE notes •
+   24 notes: notes • TOKEN_COMMA note_or_chord
+
+    TOKEN_COMMA  desplazar e ir al estado 38
+
+    $default  reduce usando la regla 20 (compasses)
+
+
+Estado 50
+
+   23 note_or_chord: chord •
+
+    $default  reduce usando la regla 23 (note_or_chord)
+
+
+Estado 51
+
+   24 notes: notes TOKEN_COMMA note_or_chord •
+
+    $default  reduce usando la regla 24 (notes)
+
+
+Estado 52
+
+   39 dotted: TOKEN_DOTTED •
+
+    $default  reduce usando la regla 39 (dotted)
+
+
+Estado 53
+
+   32 note: notename duration dotted •
+
+    $default  reduce usando la regla 32 (note)
+
+
+Estado 54
+
+   33 note: notename alteration duration •
+   34     | notename alteration duration • dotted
+
+    TOKEN_DOTTED  desplazar e ir al estado 52
+
+    $default  reduce usando la regla 33 (note)
+
+    dotted  ir al estado 61
+
+
+Estado 55
+
+   13 time: TOKEN_TIME digit TOKEN_SLASH digit • TOKEN_LBRACE $@1 body TOKEN_RBRACE
+
+    TOKEN_LBRACE  desplazar e ir al estado 62
+
+
+Estado 56
+
+   14 tempo: TOKEN_TEMPO duration TOKEN_EQUALS digit •
+
+    $default  reduce usando la regla 14 (tempo)
+
+
+Estado 57
+
+   15 section: TOKEN_SECTION id TOKEN_LBRACE compasses • TOKEN_RBRACE
+   20 compasses: compasses • TOKEN_BAR_LINE notes
+
+    TOKEN_RBRACE    desplazar e ir al estado 63
+    TOKEN_BAR_LINE  desplazar e ir al estado 36
+
+
+Estado 58
+
+   16 section: TOKEN_REPEAT digit TOKEN_LBRACE compasses • TOKEN_RBRACE
+   20 compasses: compasses • TOKEN_BAR_LINE notes
+
+    TOKEN_RBRACE    desplazar e ir al estado 64
+    TOKEN_BAR_LINE  desplazar e ir al estado 36
+
+
+Estado 59
+
+   28 chordnotes: chordnotes TOKEN_COMMA chordnote •
+
+    $default  reduce usando la regla 28 (chordnotes)
+
+
+Estado 60
+
+   30 chord: TOKEN_LBRACKET chordnotes TOKEN_RBRACKET duration •
+
+    $default  reduce usando la regla 30 (chord)
+
+
+Estado 61
+
+   34 note: notename alteration duration dotted •
+
+    $default  reduce usando la regla 34 (note)
+
+
+Estado 62
+
+   13 time: TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE • $@1 body TOKEN_RBRACE
+
+    $default  reduce usando la regla 12 ($@1)
+
+    $@1  ir al estado 65
+
+
+Estado 63
+
+   15 section: TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE •
+
+    $default  reduce usando la regla 15 (section)
+
+
+Estado 64
+
+   16 section: TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE •
+
+    $default  reduce usando la regla 16 (section)
+
+
+Estado 65
+
+   13 time: TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE $@1 • body TOKEN_RBRACE
+
+    TOKEN_TIME        desplazar e ir al estado 1
+    TOKEN_NOTE        desplazar e ir al estado 3
+    TOKEN_SECTION     desplazar e ir al estado 4
+    TOKEN_REPEAT      desplazar e ir al estado 5
+    TOKEN_LBRACKET    desplazar e ir al estado 6
+    TOKEN_IDENTIFIER  desplazar e ir al estado 7
+    TOKEN_REST        desplazar e ir al estado 8
+
+    statement      ir al estado 66
+    time           ir al estado 11
+    section        ir al estado 13
+    idReference    ir al estado 14
+    compasses      ir al estado 15
+    note_or_chord  ir al estado 16
+    notes          ir al estado 17
+    chord          ir al estado 18
+    note           ir al estado 19
+    notename       ir al estado 20
+    body           ir al estado 67
+
+
+Estado 66
+
+   40 body: statement •
+
+    $default  reduce usando la regla 40 (body)
+
+
+Estado 67
+
+   13 time: TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE $@1 body • TOKEN_RBRACE
+
+    TOKEN_RBRACE  desplazar e ir al estado 68
+
+
+Estado 68
+
+   13 time: TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE $@1 body TOKEN_RBRACE •
+
+    $default  reduce usando la regla 13 (time)

@@ -3,6 +3,7 @@
 #include <statement.hpp>
 #include <string> 
 #include <stack>
+#include <vector>
 
 #define YYSTYPE Statement*
 
@@ -14,7 +15,8 @@ Statement* parser_result{nullptr};
 
 std::stack<bool> time_active_stack;
 
-bool is_time_active() {
+bool is_time_active() 
+{
     return !time_active_stack.empty() && time_active_stack.top();
 }
 
@@ -22,6 +24,8 @@ bool is_time_active() {
 
 %token TOKEN_EOF
 %token TOKEN_TIME
+%token TOKEN_TEMPO
+%token TOKEN_EQUALS
 %token TOKEN_NOTE
 %token TOKEN_ALTERATION
 %token TOKEN_DURATION
@@ -46,8 +50,11 @@ bool is_time_active() {
 %token TOKEN_DOTTED
 
 %%
-program : statement                                                                  { parser_result = $1; }
-        ;                                              
+program : statement                          { parser_result = $1; }
+        | tempo statement                    { parser_result = new StatementSequence($1, $2); }
+        ;
+
+                                             
 statement : compasses statement                                                      { $$ = new StatementSequence($1, $2); }
           | section statement                                                        { $$ = new StatementSequence($1, $2); }
           | time statement                                                           { $$ = new StatementSequence($1, $2); }
@@ -56,14 +63,19 @@ statement : compasses statement                                                 
           | idReference                                                              { $$ = $1; }
           | time                                                                     { $$ = $1; }
           | compasses                                                                { $$ = $1; }
+          | chord                                                                    { $$ = $1; }
           ;          
 
 time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE { time_active_stack.push(true); } body TOKEN_RBRACE      {   $$ = new Time($2, $4, $7);
-                                                                                                                    if (!time_active_stack.empty()) {
+                                                                                                                    if (!time_active_stack.empty()) 
+                                                                                                                    {
                                                                                                                         time_active_stack.pop(); 
                                                                                                                     }
                                                                                                                 }
      ;
+
+tempo : TOKEN_TEMPO duration TOKEN_EQUALS digit                                      {$$ = new Tempo($2, $4);}
+
 
 section : TOKEN_SECTION id TOKEN_LBRACE compasses TOKEN_RBRACE                       { $$ = new SectionDeclaration($2, $4); }
         | TOKEN_REPEAT digit TOKEN_LBRACE compasses TOKEN_RBRACE                     { $$ = new RepeatDeclaration($2, $4); }                                                         
@@ -78,13 +90,32 @@ id : TOKEN_IDENTIFIER                                                           
 idReference : TOKEN_IDENTIFIER                                                       { $$ = new SectionReference(yytext);}                                  
             ;
 
-compasses : compasses TOKEN_BAR_LINE notes                                           { $$ =  new MeasureSequence($1, $3, is_time_active()); }  
-          |  notes                                                                   { $$ = $1; }                                                              
+compasses : compasses TOKEN_BAR_LINE notes    { $$ = new MeasureSequence($1, $3, is_time_active()); }  
+          | notes                             { $$ = $1; }
           ;
 
-notes: notes TOKEN_COMMA note                                                        { $$ =  new NotesSequence($1, $3, is_time_active()); }
-     | note                                                                          { $$ = $1; }                                                              
-     ;   
+note_or_chord: note                        { $$ = $1; }
+             | chord                       { $$ = $1; }
+             ;
+
+notes: notes TOKEN_COMMA note_or_chord     { $$ = new NotesSequence($1, $3, is_time_active()); }
+     | note_or_chord                       { $$ = $1; }
+     ;
+
+chordnote : notename                                                                 { $$ = new Note($1, nullptr, nullptr, nullptr, true); }
+          | notename alteration                                                      { $$ = new Note($1, $2, nullptr, nullptr, true); }
+          ;
+
+chordnotes : chordnotes TOKEN_COMMA chordnote                                        { $$ =  new NotesSequence($1, $3, true); }
+           | chordnote                                                               { $$ = $1; }                                                              
+           ;
+
+
+chord: TOKEN_LBRACKET chordnotes TOKEN_RBRACKET duration 
+     {
+         $$ = new Chord($2, $4);
+     }
+
 
 note : notename duration                                                             { $$ = new Note($1, nullptr, $2, nullptr, is_time_active()); }
      | notename duration dotted                                                      { $$ = new Note($1, nullptr, $2, $3, is_time_active()); }   
@@ -105,7 +136,7 @@ alteration : TOKEN_ALTERATION                                                   
 dotted : TOKEN_DOTTED                                                                { $$ = new Value(yytext);}                    
        ;
         
-body: statement { $$ = $1; }
+body: statement {  $$ = $1; }
     ;
 %%
 
