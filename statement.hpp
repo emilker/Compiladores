@@ -47,6 +47,9 @@ public:
     void destroy() noexcept override;
     float pulse() noexcept = 0;
     std::string get_value() noexcept = 0;
+
+    Statement* get_r() const noexcept { return right_Sequence; }
+    Statement* get_l() const noexcept { return left_Sequence; }
     
 protected:
     Statement* left_Sequence;
@@ -101,7 +104,25 @@ private:
     Statement* dottes;
     bool time;
 };
- 
+
+class Chord : public Statement 
+{
+public:
+    Chord(Statement* notes_, Statement* duration_);
+    
+    void print() noexcept override;
+    float pulse() noexcept override;
+    void destroy() noexcept override;
+    std::string get_value() noexcept override;
+    bool semantic_analysis(SymbolTable& symbol_table) noexcept override;
+    void generate_sound(AudioGenerator& audio_gen) noexcept override;
+    
+private:
+    Statement* notes; // Las notas que conforman el acorde
+    Statement* duration_stmt = nullptr;
+    
+};
+    
 class SectionDeclaration : public Statement 
 {
 public:
@@ -148,7 +169,26 @@ private:
     Statement* figure_;
     Statement* body;
 };
- 
+
+class Tempo :  public Statement
+{
+public:
+    Tempo(Statement* FIGURE, Statement* BPM);
+
+    void print() noexcept;
+    void destroy() noexcept;
+    float pulse() noexcept override { return static_cast<float>(BPM_); }
+
+    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
+    bool resolve_name(SymbolTable& symbol_table) noexcept;
+    void generate_sound(AudioGenerator& audio_gen) noexcept override;
+
+private:
+    Statement* figure_;
+    Statement* bpm_;
+    double BPM_;
+};
+
 class SectionReference : public Statement 
 {
 public:
