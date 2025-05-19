@@ -1,39 +1,26 @@
-#pragma once
-#include <string>
-#include <vector>
 #include <fluidsynth.h>
 #include <sndfile.h>
-#include <unordered_map>
-struct SoundFrequencies 
-{
-    std::vector<std::string> note_names; 
-    double beats;
-};
+#include <string>
+#include <memory>
 
-class AudioGenerator
-{
+class AudioGenerator {
 public:
-    AudioGenerator(int sample_rate = 44100);
+    AudioGenerator();
     ~AudioGenerator();
-
-    bool load_soundfont(const std::string& path);
-    void start_recording(const std::string& wav_filename);
-    void stop_recording();
-    void play_note(const std::vector<std::string>& notes, double beats);
-    void set_tempo(double bpm);
-    void write_wav(const std::string& filename, const std::vector<short>& buffer, int sample_rate);    
-    int convert_to_midi(const std::string& nota) const;
     
-
-
+    void start_recording(const std::string& output_file);
+    void stop_recording();
+    void play_note(int midi_note, float duration_seconds, int velocity);
+    int convert_to_midi(std::string nota);
+    
 private:
-    static const std::unordered_map<std::string, int> KeyToMidi;
-    std::vector<SoundFrequencies> notes;
-    std::string output_path;
-    double bpm = 120.0; // default
-    int sample_rate;
-
-
     fluid_settings_t* settings;
     fluid_synth_t* synth;
+
+    SNDFILE* outfile;
+    SF_INFO sfinfo;
+    bool is_recording;
+
+    int buffer_size = 1024;
+    short audio_buffer[1024 * 2]; 
 };

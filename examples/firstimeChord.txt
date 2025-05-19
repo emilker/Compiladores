@@ -1,9 +1,0 @@
-tempo q = 100
-time 4/4
-{
-    repeat 2
-    {
-        E4 q, G4 h, [C4, E4, B4, E5, C3, G4] q | [C4, E4, G4] w | [C4, E4, G4] w
-    }
-  
-}

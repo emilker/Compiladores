@@ -3,7 +3,6 @@
 #include <fstream>
 #include <cstdlib>
 #include <string>
-#include <stack>
 #include "symbol_table.hpp"
 #include "audiogenerator.hpp"
 
@@ -319,12 +318,11 @@ bool Note::semantic_analysis() noexcept
 
 void Note::generate_sound(AudioGenerator &audio_gen) noexcept
 {
-    std::string note_name = note->get_value(); // El valor como "C4", "D#5", etc.
-    float beats = pulse(); // Duración en beats (figura rítmica)
-
-    audio_gen.play_note({note_name}, beats); // Usamos el nuevo método play_note
+    int midi_note = audio_gen.convert_to_midi(note->get_value());
+    float duration = pulse(); 
+    
+    audio_gen.play_note(midi_note, duration, 100);
 }
-
 
 float Note::pulse() noexcept
 {
@@ -374,92 +372,6 @@ void Note::destroy() noexcept
         dottes = nullptr;
     }
 
-}
-
-Chord::Chord(Statement* notes_, Statement* duration_)
-    : notes(std::move(notes_)), duration_stmt(duration_)
-{
-}
-
-void Chord::print() noexcept
-{
-    std::cout << "Chord(";
-    dynamic_cast<NotesSequence*>(notes)->print();
-    std::cout << ") " << duration_stmt->get_value() << std::endl;
-}
-
-float Chord::pulse() noexcept
-{
-    static std::unordered_map<std::string, float> durations = {
-        {"w", 4}, {"h", 2}, {"q", 1}, {"e", 0.5}, {"s", 0.25}
-    };
-
-    auto it = durations.find(duration_stmt->get_value());
-
-    float pulse = it->second;
-
-    return pulse;
-}
-
-std::string Chord::get_value() noexcept
-{
-    std::string result = "{";
-    result += dynamic_cast<NotesSequence*>(notes)->get_value();
-    result += "}" + (duration_stmt ? duration_stmt->get_value() : "");
-    return result;
-}
-
-bool Chord::semantic_analysis(SymbolTable& symbol_table) noexcept
-{
-    if (!notes->semantic_analysis(symbol_table))
-    {
-        return false;
-    }
-
-    if (duration_stmt && !duration_stmt->semantic_analysis(symbol_table))
-    {
-        return false;
-    }
-
-    return true;
-}
-
-void Chord::generate_sound(AudioGenerator& audio_gen) noexcept
-{
-    std::vector<std::string> note_names;
-    float duration = pulse(); 
-
-    NotesSequence* seq = dynamic_cast<NotesSequence*>(notes);
-    
-    while (seq != nullptr)
-    {
-        note_names.push_back(seq->get_r()->get_value());
-
-        NotesSequence* curr = seq;
-
-        seq = dynamic_cast<NotesSequence*>(curr->get_l());
-
-        if (seq == nullptr)
-        {
-            note_names.push_back(curr->get_l()->get_value());
-        }
-    }
-
-    audio_gen.play_note(note_names, duration);
-}
-
-void Chord::destroy() noexcept
-{
-    notes->destroy();
-    delete notes;
-    notes = nullptr;
-
-    if (duration_stmt)
-    {
-        duration_stmt->destroy();
-        delete duration_stmt;
-        duration_stmt = nullptr;
-    }
 }
 
 SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _measures)
@@ -583,89 +495,6 @@ void Time::generate_sound(AudioGenerator &audio_gen) noexcept
 {
     body->generate_sound(audio_gen);
 }
-
-Tempo::Tempo(Statement* FIGURE, Statement* BPM)
-    : figure_{FIGURE}, bpm_{BPM}
-{
-}
-
-void Tempo::destroy() noexcept
-{
-    if (bpm_) 
-    {
-        bpm_->destroy();
-        delete bpm_;
-        bpm_ = nullptr;
-    }
-
-    if (figure_) 
-    {
-        figure_->destroy();
-        delete figure_;
-        figure_ = nullptr;
-    }
-}
-
-void Tempo::print() noexcept
-{
-    if (figure_ && bpm_) 
-    {
-        std::cout << "Tempo: " << figure_->get_value() << " = " << BPM_ << std::endl;
-    } 
-    else 
-    {
-        std::cout << "Tempo: [invalid]" << std::endl;
-    }
-}
-
-bool Tempo::semantic_analysis(SymbolTable& symbol_table) noexcept
-{
-    if (!figure_ || !bpm_) return false;
-
-    std::string figure = figure_->get_value();
-    std::string bpm_str = bpm_->get_value();
-
-    if (figure.empty() || bpm_str.empty()) return false;
-
-    // Mapa de equivalencias de figuras
-    static const std::unordered_map<char, float> FIGURE_TO_MULTIPLIER = {
-        {'w', 4.0f}, {'h', 2.0f}, {'q', 1.0f},
-        {'e', 0.5f}, {'s', 0.25f}
-    };
-
-    char figure_char = figure[0];
-
-    auto it = FIGURE_TO_MULTIPLIER.find(figure_char);
-    if (it == FIGURE_TO_MULTIPLIER.end()) 
-    {
-        std::cerr << "Error: Figura de nota no válida en tempo: " << figure_char << std::endl;
-        return false;
-    }
-
-    try 
-    {
-        BPM_ = std::stod(bpm_str);
-    } 
-    catch (...) 
-    {
-        std::cerr << "Error: Valor de BPM inválido: " << bpm_str << std::endl;
-        return false;
-    }
-
-    BPM_ *= it->second;
-    return true;
-}
-
-void Tempo::generate_sound(AudioGenerator& audio_gen) noexcept
-{
-    audio_gen.set_tempo(BPM_);
-}
-
-bool Tempo::resolve_name(SymbolTable& symbol_table) noexcept
-{
-    return figure_->resolve_name(symbol_table) && bpm_->resolve_name(symbol_table);
-}
-
 
 SectionReference::SectionReference(std::string _id) noexcept
     : id(_id), measures(nullptr)

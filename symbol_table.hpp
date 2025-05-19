@@ -6,8 +6,7 @@
 #include <vector>
 
 class Statement; 
-class Symbol 
-{
+class Symbol {
 public:
     std::string name;       
     Statement* measures;          
@@ -19,8 +18,7 @@ public:
     Symbol(std::string_view name, Statement* measures) : name(name), measures(measures) {}   
 };
 
-class SymbolTable 
-{
+class SymbolTable {
 public:
     using TableType = std::unordered_map<std::string, std::shared_ptr<Symbol>>;
     using TableStack = std::vector<TableType>;
