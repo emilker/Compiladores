@@ -63,7 +63,6 @@ statement : compasses statement                                                 
           | idReference                                                              { $$ = $1; }
           | time                                                                     { $$ = $1; }
           | compasses                                                                { $$ = $1; }
-          | chord                                                                    { $$ = $1; }
           ;          
 
 time : TOKEN_TIME digit TOKEN_SLASH digit TOKEN_LBRACE { time_active_stack.push(true); } body TOKEN_RBRACE      {   $$ = new Time($2, $4, $7);
