@@ -12,7 +12,6 @@ class Statement
 {
 public:
     virtual ~Statement();
-    virtual void print() noexcept = 0;
     virtual void destroy() noexcept = 0;
     virtual float pulse() noexcept = 0;
     virtual bool semantic_analysis() {return true;};
@@ -27,7 +26,6 @@ class StatementSequence : public Statement
 public:
     StatementSequence(Statement* f, Statement* n) noexcept;
  
-    void print() noexcept override;
     void destroy() noexcept override;
     float pulse() noexcept override;
     bool semantic_analysis() noexcept;
@@ -61,7 +59,6 @@ class MeasureSequence : public Measures
 public:
     using Measures::Measures;
  
-    void print() noexcept override;
     float pulse() noexcept override;
     void destroy() noexcept override;
     std::string get_value() noexcept override;
@@ -74,7 +71,6 @@ class NotesSequence : public Measures
 public:
     using Measures::Measures;
  
-    void print() noexcept override;
     float pulse() noexcept override;
     void destroy() noexcept override;
     std::string get_value() noexcept override;
@@ -87,7 +83,6 @@ class Note : public Statement
 public:
     Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_, bool time_) noexcept;
  
-    void print() noexcept override;
     float pulse() noexcept override;
     void destroy() noexcept override;
     std::string get_value() noexcept override;
@@ -107,7 +102,6 @@ class SectionDeclaration : public Statement
 public:
     SectionDeclaration(Statement* _id, Statement* _measures);
  
-    void print() noexcept override;
     void destroy() noexcept override;
     float pulse() noexcept override { return 0.0f; }
     bool resolve_name(SymbolTable& symbol_table) noexcept;
@@ -122,7 +116,6 @@ class Value : public Statement
 public:
     Value(std::string v) noexcept;
  
-    void print() noexcept override;
     float pulse() noexcept override { return 0.0f; }
     void destroy() noexcept override;
     std::string get_value() noexcept override;
@@ -136,7 +129,6 @@ class Time : public Statement
 public:
     Time(Statement* pulse_, Statement* figure_, Statement* body_);
  
-    void print() noexcept override;
     void destroy() noexcept override;
     float pulse() noexcept override { return 1000; }
     bool semantic_analysis() noexcept;
@@ -154,7 +146,6 @@ class SectionReference : public Statement
 public:
     SectionReference(std::string id) noexcept;
  
-    void print() noexcept override;
     void destroy() noexcept override;
     float pulse() noexcept override;
     bool resolve_name(SymbolTable& symbol_table) noexcept;
@@ -171,7 +162,6 @@ class RepeatDeclaration : public Statement
 public:
     RepeatDeclaration(Statement* count, Statement* measures_) noexcept;
 
-    void print() noexcept override;
     void destroy() noexcept override;
     float pulse() noexcept override;
     bool semantic_analysis() noexcept;

@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
         audio_gen.start_recording("Melodia.wav");
         parser_result->generate_sound(audio_gen);
         audio_gen.stop_recording();
-        parser_result->print();
+        
         parser_result->destroy();
     }
     else

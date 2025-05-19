@@ -17,12 +17,6 @@ StatementSequence::StatementSequence(Statement* f, Statement* n) noexcept
 {
 }
 
-void StatementSequence::print() noexcept
-{
-    if (first) first->print();
-    if (next) next->print();
-}
-
 void StatementSequence::destroy() noexcept
 {
     if (first)
@@ -140,11 +134,6 @@ void Measures::destroy() noexcept
     }
 }
 
-void MeasureSequence::print() noexcept
-{
-    std::cout << left_Sequence->get_value() << " | " << right_Sequence->get_value() << std::endl;
-}
-
 float MeasureSequence::pulse() noexcept
 {
     if (left_Sequence) left_pulse = left_Sequence->pulse();
@@ -215,11 +204,6 @@ void MeasureSequence::generate_sound(AudioGenerator &audio_gen) noexcept
     if (right_Sequence) right_Sequence->generate_sound(audio_gen);
 }
 
-void NotesSequence::print() noexcept
-{
-    std::cout << left_Sequence->get_value() << " , " << right_Sequence->get_value() << std::endl;
-}
-
 void NotesSequence::destroy() noexcept
 {
     if (left_Sequence)
@@ -287,11 +271,6 @@ float NotesSequence::pulse() noexcept
 Note::Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_, bool time_) noexcept
     : note(note_), alteration(alteration_), duration(duration_), dottes(dottes_), time(time_)
 {
-}
-
-void Note::print() noexcept
-{
-    std::cout << get_value() << std::endl;
 }
 
 std::string Note::get_value() noexcept
@@ -379,10 +358,6 @@ SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _measures)
 {
 }
 
-void SectionDeclaration::print() noexcept
-{
-}
-
 void SectionDeclaration::destroy() noexcept
 {
     id->destroy();
@@ -416,11 +391,6 @@ std::string Value::get_value() noexcept
     return value;
 }
 
-void Value::print() noexcept
-{
-    std::cout << value << std::endl;
-}
-
 void Value::destroy() noexcept
 {
 }
@@ -428,11 +398,6 @@ void Value::destroy() noexcept
 Time::Time(Statement* pulse_, Statement* figure_, Statement* body_)
     : pulse_(pulse_), figure_(figure_), body(body_)
 {
-}
-
-void Time::print() noexcept
-{
-    if (body) body->print();
 }
 
 void Time::destroy() noexcept
@@ -501,11 +466,6 @@ SectionReference::SectionReference(std::string _id) noexcept
 {
 }
 
-void SectionReference::print() noexcept
-{
-    measures->print();
-}
-
 void SectionReference::destroy() noexcept
 {
     measures->destroy();
@@ -544,14 +504,6 @@ void SectionReference::generate_sound(AudioGenerator &audio_gen) noexcept
 RepeatDeclaration::RepeatDeclaration(Statement* count, Statement* measures_) noexcept
     : repeat_count(count), measures(measures_)
 {
-}
-
-void RepeatDeclaration::print() noexcept
-{
-    for (int i = 0; i < std::stoi(repeat_count->get_value()); ++i)
-    {
-        if (measures) measures->print();
-    }
 }
 
 float RepeatDeclaration::pulse() noexcept
