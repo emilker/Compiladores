@@ -15,7 +15,7 @@ public:
     virtual void print() noexcept = 0;
     virtual void destroy() noexcept = 0;
     virtual float pulse() noexcept = 0;
-    virtual bool semantic_analysis(SymbolTable& symbol_table) {return true;};
+    virtual bool semantic_analysis() {return true;};
     virtual bool resolve_name(SymbolTable& symbol_table) {return true;};
     virtual std::string get_value() noexcept { return ""; }
     virtual void generate_sound(AudioGenerator& audio_gen) {};
@@ -30,7 +30,7 @@ public:
     void print() noexcept override;
     void destroy() noexcept override;
     float pulse() noexcept override;
-    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
+    bool semantic_analysis() noexcept;
     bool resolve_name(SymbolTable& symbol_table) noexcept;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
 
@@ -65,7 +65,7 @@ public:
     float pulse() noexcept override;
     void destroy() noexcept override;
     std::string get_value() noexcept override;
-    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
+    bool semantic_analysis() noexcept;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
 };
  
@@ -78,11 +78,11 @@ public:
     float pulse() noexcept override;
     void destroy() noexcept override;
     std::string get_value() noexcept override;
-    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
+    bool semantic_analysis() noexcept;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
 };
 
-class Note : public Statement 
+class Note : public Statement
 {
 public:
     Note(Statement* note_, Statement* alteration_, Statement* duration_, Statement* dottes_, bool time_) noexcept;
@@ -91,7 +91,7 @@ public:
     float pulse() noexcept override;
     void destroy() noexcept override;
     std::string get_value() noexcept override;
-    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
+    bool semantic_analysis() noexcept;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
  
 private:
@@ -139,7 +139,7 @@ public:
     void print() noexcept override;
     void destroy() noexcept override;
     float pulse() noexcept override { return 1000; }
-    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
+    bool semantic_analysis() noexcept;
     bool resolve_name(SymbolTable& symbol_table) noexcept;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
  
@@ -158,7 +158,7 @@ public:
     void destroy() noexcept override;
     float pulse() noexcept override;
     bool resolve_name(SymbolTable& symbol_table) noexcept;
-    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
+    bool semantic_analysis() noexcept;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
  
 private:
@@ -174,7 +174,7 @@ public:
     void print() noexcept override;
     void destroy() noexcept override;
     float pulse() noexcept override;
-    bool semantic_analysis(SymbolTable& symbol_table) noexcept;
+    bool semantic_analysis() noexcept;
     void generate_sound(AudioGenerator& audio_gen) noexcept override;
  
 private:

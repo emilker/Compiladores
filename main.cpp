@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
             exit(EXIT_FAILURE);
         }
         
-        if (parser_result->semantic_analysis(symbolTable))
+        if (parser_result->semantic_analysis())
         {
             std::cout << "Semantic analysis successful!\n" << std::endl;
         }
@@ -62,8 +62,8 @@ int main(int argc, char* argv[])
         audio_gen.start_recording("Melodia.wav");
         parser_result->generate_sound(audio_gen);
         audio_gen.stop_recording();
-
         parser_result->print();
+        parser_result->destroy();
     }
     else
     {

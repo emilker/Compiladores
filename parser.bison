@@ -105,7 +105,7 @@ alteration : TOKEN_ALTERATION                                                   
 dotted : TOKEN_DOTTED                                                                { $$ = new Value(yytext);}                    
        ;
         
-body: statement {  $$ = $1; }
+body: statement { $$ = $1; }
     ;
 %%
 

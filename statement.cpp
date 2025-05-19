@@ -6,7 +6,6 @@
 #include "symbol_table.hpp"
 #include "audiogenerator.hpp"
 
-
 using namespace std::literals;
 
 Statement::~Statement()
@@ -26,13 +25,19 @@ void StatementSequence::print() noexcept
 
 void StatementSequence::destroy() noexcept
 {
-    first->destroy();
-    delete first;
-    first = nullptr;
+    if (first)
+    {
+        first->destroy();
+        delete first;
+        first = nullptr;
+    }
 
-    next->destroy();
-    delete next;
-    next = nullptr;
+    if (next)
+    {
+        next->destroy();
+        delete next;
+        next = nullptr;
+    }
 }
 
 float StatementSequence::pulse() noexcept
@@ -58,13 +63,13 @@ float StatementSequence::pulse() noexcept
 }
 
 
-bool StatementSequence::semantic_analysis(SymbolTable &symbol_table) noexcept
+bool StatementSequence::semantic_analysis() noexcept
 {
     bool result = true;
 
     if (first)
     {
-        result =  first->semantic_analysis(symbol_table);
+        result =  first->semantic_analysis();
         if (!result)
         {
             return false;
@@ -73,7 +78,7 @@ bool StatementSequence::semantic_analysis(SymbolTable &symbol_table) noexcept
 
     if (next) 
     {
-        result = next->semantic_analysis(symbol_table);
+        result = next->semantic_analysis();
         if (!result)
         {
             return false;
@@ -121,13 +126,18 @@ Measures::Measures(Statement* c1, Statement* c2, bool time_)
 
 void Measures::destroy() noexcept
 {
-    left_Sequence->destroy();
-    delete left_Sequence;
-    left_Sequence = nullptr;
-
-    right_Sequence->destroy();
-    delete right_Sequence;
-    right_Sequence = nullptr;
+    if (left_Sequence)
+    {
+        left_Sequence->destroy();
+        delete left_Sequence;
+        left_Sequence = nullptr;
+    }
+    if (right_Sequence)
+    {
+        right_Sequence->destroy();
+        delete right_Sequence;
+        right_Sequence = nullptr;
+    }
 }
 
 void MeasureSequence::print() noexcept
@@ -152,13 +162,19 @@ float MeasureSequence::pulse() noexcept
 
 void MeasureSequence::destroy() noexcept
 {
-    left_Sequence->destroy();
-    delete left_Sequence;
-    left_Sequence = nullptr;
+    if (left_Sequence)
+    {
+        left_Sequence->destroy();
+        delete left_Sequence;
+        left_Sequence = nullptr;
+    }
 
-    right_Sequence->destroy();
-    delete right_Sequence;
-    right_Sequence = nullptr;
+    if (right_Sequence)
+    {
+        right_Sequence->destroy();
+        delete right_Sequence;
+        right_Sequence = nullptr;
+    }
 }
 
 std::string MeasureSequence::get_value() noexcept
@@ -166,7 +182,7 @@ std::string MeasureSequence::get_value() noexcept
     return left_Sequence->get_value() + " | " + right_Sequence->get_value();
 }
 
-bool MeasureSequence::semantic_analysis(SymbolTable &symbol_table) noexcept
+bool MeasureSequence::semantic_analysis() noexcept
 {
     if (!time)
     {
@@ -226,7 +242,7 @@ std::string NotesSequence::get_value() noexcept
     return left_Sequence->get_value() + " , " + right_Sequence->get_value();
 }
 
-bool NotesSequence::semantic_analysis(SymbolTable &symbol_table) noexcept
+bool NotesSequence::semantic_analysis() noexcept
 {
     if (!time)
     {   
@@ -286,7 +302,7 @@ std::string Note::get_value() noexcept
            (dottes ? dottes->get_value() : "");
 }
 
-bool Note::semantic_analysis(SymbolTable &symbol_table) noexcept
+bool Note::semantic_analysis() noexcept
 {
     if (!time)
     {
@@ -328,21 +344,34 @@ float Note::pulse() noexcept
 
 void Note::destroy() noexcept
 {
-    note->destroy();
-    delete note;
-    note = nullptr;
+    if (note)
+    {
+        note->destroy();
+        delete note;
+        note = nullptr;
+    }
+    
+    if (alteration)
+    {
+        alteration->destroy();
+        delete alteration;
+        alteration = nullptr;
+    }
 
-    alteration->destroy();
-    delete alteration;
-    alteration = nullptr;
+    if (duration)
+    {
+        duration->destroy();
+        delete duration;
+        duration = nullptr;
+    }
+    
+    if (dottes)
+    {
+        dottes->destroy();
+        delete dottes;
+        dottes = nullptr;
+    }
 
-    duration->destroy();
-    delete duration;
-    duration = nullptr;
-
-    dottes->destroy();
-    delete dottes;
-    dottes = nullptr;
 }
 
 SectionDeclaration::SectionDeclaration(Statement* _id, Statement* _measures)
@@ -421,7 +450,7 @@ void Time::destroy() noexcept
     body = nullptr;
 }
 
-bool Time::semantic_analysis(SymbolTable& symbol_table) noexcept
+bool Time::semantic_analysis() noexcept
 {
     int pulse = std::stoi(pulse_->get_value());
     int figure = std::stoi(figure_->get_value());
@@ -442,7 +471,7 @@ bool Time::semantic_analysis(SymbolTable& symbol_table) noexcept
         return false;
     }
 
-    if (!body->semantic_analysis(symbol_table))
+    if (!body->semantic_analysis())
     {
         return false;
     }
@@ -479,6 +508,9 @@ void SectionReference::print() noexcept
 
 void SectionReference::destroy() noexcept
 {
+    measures->destroy();
+    delete measures;
+    measures = nullptr;
 }
 
 float SectionReference::pulse() noexcept
@@ -499,9 +531,9 @@ bool SectionReference::resolve_name(SymbolTable &symbol_table) noexcept
     return true;
 }
 
-bool SectionReference::semantic_analysis(SymbolTable &symbol_table) noexcept
+bool SectionReference::semantic_analysis() noexcept
 {
-    return measures->semantic_analysis(symbol_table);
+    return measures->semantic_analysis();
 }
 
 void SectionReference::generate_sound(AudioGenerator &audio_gen) noexcept
@@ -527,9 +559,9 @@ float RepeatDeclaration::pulse() noexcept
     return measures->pulse();
 }
 
-bool RepeatDeclaration::semantic_analysis(SymbolTable& symbol_table) noexcept
+bool RepeatDeclaration::semantic_analysis() noexcept
 {
-    return measures->semantic_analysis(symbol_table);
+    return measures->semantic_analysis();
 }
 
 void RepeatDeclaration::generate_sound(AudioGenerator &audio_gen) noexcept
