@@ -30,4 +30,4 @@ audiogenerator.o: audiogenerator.hpp audiogenerator.cpp
 
 .PHONY:
 clean:
-	$(RM) *.o parser.cpp parser.output token.h scanner.cpp validator Melodia.wav
+	$(RM) *.o parser.cpp parser.output token.h scanner.cpp validator YourSongs/*.wav

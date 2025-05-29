@@ -9,6 +9,7 @@
 extern FILE* yyin;
 extern int yyparse();
 extern Statement* parser_result;
+std::string song_name;
 
 void usage(const char* program_name) 
 {
@@ -59,7 +60,23 @@ int main(int argc, char* argv[])
         }
         
         AudioGenerator audio_gen;
-        audio_gen.start_recording("Melodia.wav");
+        song_name = std::string(argv[1]);
+        //audio_gen.start_recording("Melodia.wav");
+        size_t pos = song_name.find(".txt");
+    
+        
+        if (pos != std::string::npos) 
+        {
+            song_name.erase(pos);
+        }
+        else
+        {
+            std::cerr << "Formato no valido\n";
+            return 1;
+        }
+
+        song_name = song_name + ".wav";
+        audio_gen.start_recording(song_name);
         parser_result->generate_sound(audio_gen);
         audio_gen.stop_recording();
         

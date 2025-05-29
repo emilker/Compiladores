@@ -43,8 +43,6 @@ float StatementSequence::pulse() noexcept
     
     if (next) next_ = next->pulse();
 
-    std::cout << "first: " << first_;
-    std::cout << " next: " << next_ << std::endl;
 
     if (first_ == 1000) return next_;
 

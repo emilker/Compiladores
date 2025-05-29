@@ -100,6 +100,13 @@ void AudioGenerator::stop_recording()
         frame_index += frames_for_event;
     }
 
+    std::string to_replace = "examples/";
+    std::string replacement = "YourSongs/";
+
+    size_t pos = output_path.find(to_replace);
+    if (pos != std::string::npos) {
+        output_path.replace(pos, to_replace.length(), replacement);
+    }
     write_wav(output_path, buffer, sample_rate);
     std::cout << "✅ Audio generado en '" << output_path << "' (" << bpm << " BPM)\n";
 }
