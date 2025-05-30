@@ -2,32 +2,38 @@ CXX = g++
 FLEX = flex
 BISON = bison -Wcounterexamples --defines=token.h
 
-all: validator
+OBJDIR = bin
+OBJS = $(OBJDIR)/parser.o $(OBJDIR)/scanner.o $(OBJDIR)/main.o $(OBJDIR)/statement.o $(OBJDIR)/audiogenerator.o
 
-validator: parser.o scanner.o main.o statement.o audiogenerator.o
-	$(CXX) scanner.o parser.o main.o statement.o audiogenerator.o -o validator -lfluidsynth -lsndfile
+all: RhythmCode
 
-parser.o: parser.cpp
-	$(CXX) -c -I. parser.cpp
+RhythmCode: $(OBJS)
+	$(CXX) $(OBJS) -o RhythmCode -lfluidsynth -lsndfile
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
+
+$(OBJDIR)/parser.o: parser.cpp | $(OBJDIR)
+	$(CXX) -c -I. parser.cpp -o $@
 
 parser.cpp: parser.bison
 	$(BISON) -v --output parser.cpp parser.bison
 
-scanner.o: token.h scanner.cpp
-	$(CXX) -c scanner.cpp
+$(OBJDIR)/scanner.o: token.h scanner.cpp | $(OBJDIR)
+	$(CXX) -c scanner.cpp -o $@
 
 scanner.cpp: scanner.flex 
 	$(FLEX) -o scanner.cpp scanner.flex
 
-main.o: token.h main.cpp
-	$(CXX) -c -I. main.cpp
+$(OBJDIR)/main.o: token.h main.cpp | $(OBJDIR)
+	$(CXX) -c -I. main.cpp -o $@
 
-statement.o: statement.hpp statement.cpp
-	$(CXX) -c -I. statement.cpp	
+$(OBJDIR)/statement.o: statement.hpp statement.cpp | $(OBJDIR)
+	$(CXX) -c -I. statement.cpp -o $@
 
-audiogenerator.o: audiogenerator.hpp audiogenerator.cpp
-	$(CXX) -c -I. audiogenerator.cpp	
+$(OBJDIR)/audiogenerator.o: audiogenerator.hpp audiogenerator.cpp | $(OBJDIR)
+	$(CXX) -c -I. audiogenerator.cpp -o $@
 
-.PHONY:
+.PHONY: clean
 clean:
-	$(RM) *.o parser.cpp parser.output token.h scanner.cpp validator YourSongs/*.wav
+	$(RM) -r $(OBJDIR) parser.cpp parser.output token.h scanner.cpp RhythmCode YourSongs/*.wav

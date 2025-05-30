@@ -2,3 +2,4 @@ clases
 main.o
 parser.o
 .vscode
+bin

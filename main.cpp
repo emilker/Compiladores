@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
     if (!yyin) 
     {
-        std::cerr << "Could not open " << argv[1] << std::endl;
+        std::cerr << "🛑 Could not open " << argv[1] << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -36,33 +36,23 @@ int main(int argc, char* argv[])
 
     if (result == 0)
     { 
-        SymbolTable symbolTable;  
-        std::cout << "Parse successful!\n" << std::endl;
+        SymbolTable symbolTable;
        
-        if (parser_result->resolve_name(symbolTable))
+        if (!parser_result->resolve_name(symbolTable))
         {
-            std::cout << "Name resolution successful!\n" << std::endl;
-        }
-        else
-        {
-            std::cout << "Name resolution failed!\n" << std::endl;
+            std::cout << "🛑 Name resolution failed!\n" << std::endl;
             exit(EXIT_FAILURE);
         }
         
-        if (parser_result->semantic_analysis())
+        if (!parser_result->semantic_analysis())
         {
-            std::cout << "Semantic analysis successful!\n" << std::endl;
-        }
-        else
-        {
-            std::cerr << "Semantic analysis failed!\n" << std::endl;
+            std::cerr << "🛑 Semantic analysis failed!\n" << std::endl;
             exit(EXIT_FAILURE);
         }
         
         AudioGenerator audio_gen;
         song_name = std::string(argv[1]);
-        //audio_gen.start_recording("Melodia.wav");
-        size_t pos = song_name.find(".txt");
+        size_t pos = song_name.find(".rc");
     
         
         if (pos != std::string::npos) 
@@ -71,8 +61,8 @@ int main(int argc, char* argv[])
         }
         else
         {
-            std::cerr << "Formato no valido\n";
-            return 1;
+            std::cerr << "🛑 Formato no valido\n";
+            exit(EXIT_FAILURE);
         }
 
         song_name = song_name + ".wav";
@@ -84,7 +74,8 @@ int main(int argc, char* argv[])
     }
     else
     {
-        std::cout << "Parse failed!\n" << std::endl;
+        std::cout << "🛑 Parse failed!\n" << std::endl;
+        exit(EXIT_FAILURE);
     }
 
     return 0;
