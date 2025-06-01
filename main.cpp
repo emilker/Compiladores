@@ -66,9 +66,9 @@ int main(int argc, char* argv[])
         }
 
         song_name = song_name + ".wav";
-        audio_gen.start_recording(song_name);
+        audio_gen.prepare_output(song_name);
         parser_result->generate_sound(audio_gen);
-        audio_gen.stop_recording();
+        audio_gen.render_audio();
         
         parser_result->destroy();
     }

@@ -18,7 +18,7 @@ AudioGenerator::AudioGenerator(int sample_rate)
     {
         std::cerr << "⚠️  Error al cargar SoundFont './SoundFont/GeneralUser-GS.sf2'\n";
     }
-} 
+}
 
 AudioGenerator::~AudioGenerator()
 {
@@ -26,17 +26,12 @@ AudioGenerator::~AudioGenerator()
     if (settings) delete_fluid_settings(settings);
 }
 
-bool AudioGenerator::load_soundfont(const std::string& path)
-{
-    return fluid_synth_sfload(synth, path.c_str(), 1) != FLUID_FAILED;
-}
-
 void AudioGenerator::set_tempo(double bpm)
 {
     this->bpm = bpm;
 }
 
-void AudioGenerator::start_recording(const std::string& wav_filename)
+void AudioGenerator::prepare_output(const std::string& wav_filename)
 {
     notes.clear();
     output_path = wav_filename;
@@ -47,7 +42,7 @@ void AudioGenerator::play_note(const std::vector<std::string>& note_names, doubl
     notes.push_back({note_names, beats});
 }
 
-void AudioGenerator::stop_recording()
+void AudioGenerator::render_audio()
 {
     double seconds_per_beat = 60.0 / bpm;
     double total_seconds = 0.0;
@@ -79,13 +74,10 @@ void AudioGenerator::stop_recording()
                 midi_notes.push_back(midi_note);
                 fluid_synth_noteon(synth, channel, midi_note, velocity);
             }
-            else if(note_name == "-")
+            else 
             {
+                fluid_synth_all_notes_off(synth, 0);
                 continue;
-            }
-            else
-            {
-                std::cerr << "⚠️ Unknown note: " << note_name << "\n";
             }
         }
 
@@ -154,10 +146,7 @@ const std::unordered_map<std::string, int> AudioGenerator::KeyToMidi =
 int AudioGenerator::convert_to_midi(const std::string& nota) const
 {
     auto it = KeyToMidi.find(nota);
-    if (it != KeyToMidi.end())
-        return it->second;
-    else
-        return -1; // Nota no encontrada
+    return it->second;
 }
 
 

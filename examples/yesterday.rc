@@ -1,0 +1,20 @@
+tempo q = 89
+time 4/4
+{
+    repeat 2 
+    {
+        G4 e, F4 e, F4 h. | -q, A4 e, B4 e, C5# e, D5 e, E5 e, F5 e | E5 q., D5 e, D5 h 
+        | -q, D5 e, D5 e, C5 e, B4 b e, A4 e, G4 e 
+        | B4 b q, A4 e, A4 q., G4 q 
+        | F4 q, A4 e, G4 q., D4 q 
+        | F4 q, A4 e, A4 h, -e
+    }
+
+    A4 h, A4 h | D5 q, E5 q, F5 q, E5 e, D5 e | E5 q., D5 e, C5 q, D5 q | A4 w
+    A4 h, A4 h | D5 q, E5 q, F5 q, E5 e, D5 e | E5 q., D5 e, C5 q, D5 q 
+    F5 q, C5 q, B4 b q, A4 q
+
+    G4 e, F4 e, F4 h. | -q, A4 e, B4 e, C5# e, D5 e, E5 e, F5 e | E5 q., D5 e, D5 h 
+    -q, D5 e, D5 e, C5 e, B4 b e, A4 e, G4 e | B4 b q, A4 e, A4 q., G4 q 
+    F4 q, A4 e, G4 q., D4 q | F4 q, A4 e, A4 h, -e | F4 q, A4 q, G4 q, D4 q | F4 q, A4 e, A4 h, -e
+} 
