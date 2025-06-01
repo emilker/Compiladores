@@ -18,7 +18,7 @@ AudioGenerator::AudioGenerator(int sample_rate)
     {
         std::cerr << "⚠️  Error al cargar SoundFont './SoundFont/GeneralUser-GS.sf2'\n";
     }
-}
+} 
 
 AudioGenerator::~AudioGenerator()
 {
