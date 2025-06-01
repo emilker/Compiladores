@@ -11,6 +11,7 @@ AudioGenerator::AudioGenerator(int sample_rate)
 {
     settings = new_fluid_settings();
     fluid_settings_setnum(settings, "synth.sample-rate", sample_rate);
+    fluid_settings_setnum(settings, "synth.gain", 2.0); //Aumentar volumento del sonido generado 
     synth = new_fluid_synth(settings);
 
     // Intenta cargar un SoundFont por defecto
