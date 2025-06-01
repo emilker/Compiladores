@@ -43,8 +43,6 @@ float StatementSequence::pulse() noexcept
     
     if (next) next_ = next->pulse();
 
-    std::cout << "first: " << first_;
-    std::cout << " next: " << next_ << std::endl;
 
     if (first_ == 1000) return next_;
 
@@ -297,7 +295,7 @@ bool Note::semantic_analysis() noexcept
 
 void Note::generate_sound(AudioGenerator &audio_gen) noexcept
 {
-    std::string note_name = note->get_value(); // El valor como "C4", "D#5", etc.
+    std::string note_name = note->get_value() + (alteration ? alteration->get_value() : ""); 
     float beats = pulse(); // Duración en beats (figura rítmica)
 
     audio_gen.play_note({note_name}, beats); // Usamos el nuevo método play_note

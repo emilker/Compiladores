@@ -26,17 +26,12 @@ AudioGenerator::~AudioGenerator()
     if (settings) delete_fluid_settings(settings);
 }
 
-bool AudioGenerator::load_soundfont(const std::string& path)
-{
-    return fluid_synth_sfload(synth, path.c_str(), 1) != FLUID_FAILED;
-}
-
 void AudioGenerator::set_tempo(double bpm)
 {
     this->bpm = bpm;
 }
 
-void AudioGenerator::start_recording(const std::string& wav_filename)
+void AudioGenerator::prepare_output(const std::string& wav_filename)
 {
     notes.clear();
     output_path = wav_filename;
@@ -47,7 +42,7 @@ void AudioGenerator::play_note(const std::vector<std::string>& note_names, doubl
     notes.push_back({note_names, beats});
 }
 
-void AudioGenerator::stop_recording()
+void AudioGenerator::render_audio()
 {
     double seconds_per_beat = 60.0 / bpm;
     double total_seconds = 0.0;
@@ -79,9 +74,10 @@ void AudioGenerator::stop_recording()
                 midi_notes.push_back(midi_note);
                 fluid_synth_noteon(synth, channel, midi_note, velocity);
             }
-            else
+            else 
             {
-                std::cerr << "⚠️ Nota desconocida: " << note_name << "\n";
+                fluid_synth_all_notes_off(synth, 0);
+                continue;
             }
         }
 
@@ -100,52 +96,57 @@ void AudioGenerator::stop_recording()
         frame_index += frames_for_event;
     }
 
+    std::string to_replace = "examples/";
+    std::string replacement = "YourSongs/";
+
+    size_t pos = output_path.find(to_replace);
+    if (pos != std::string::npos) {
+        output_path.replace(pos, to_replace.length(), replacement);
+    }
     write_wav(output_path, buffer, sample_rate);
     std::cout << "✅ Audio generado en '" << output_path << "' (" << bpm << " BPM)\n";
 }
 
 const std::unordered_map<std::string, int> AudioGenerator::KeyToMidi = 
 {
-    {"C1", 24}, {"C#1", 25}, {"Db1", 25}, {"D1", 26}, {"D#1", 27}, {"Eb1", 27}, {"E1", 28},
-    {"F1", 29}, {"F#1", 30}, {"Gb1", 30}, {"G1", 31}, {"G#1", 32}, {"Ab1", 32}, {"A1", 33},
-    {"A#1", 34}, {"Bb1", 34}, {"B1", 35},
+    {"C1", 24}, {"C1#", 25}, {"D1b", 25}, {"D1", 26}, {"D1#", 27}, {"E1b", 27}, {"E1", 28},
+    {"F1", 29}, {"F1#", 30}, {"G1b", 30}, {"G1", 31}, {"G1#", 32}, {"A1b", 32}, {"A1", 33},
+    {"A1#", 34}, {"B1b", 34}, {"B1", 35},
 
-    {"C2", 36}, {"C#2", 37}, {"Db2", 37}, {"D2", 38}, {"D#2", 39}, {"Eb2", 39}, {"E2", 40},
-    {"F2", 41}, {"F#2", 42}, {"Gb2", 42}, {"G2", 43}, {"G#2", 44}, {"Ab2", 44}, {"A2", 45},
-    {"A#2", 46}, {"Bb2", 46}, {"B2", 47},
+    {"C2", 36}, {"C2#", 37}, {"D2b", 37}, {"D2", 38}, {"D2#", 39}, {"E2b", 39}, {"E2", 40},
+    {"F2", 41}, {"F2#", 42}, {"G2b", 42}, {"G2", 43}, {"G2#", 44}, {"A2b", 44}, {"A2", 45},
+    {"A2#", 46}, {"B2b", 46}, {"B2", 47},
 
-    {"C3", 48}, {"C#3", 49}, {"Db3", 49}, {"D3", 50}, {"D#3", 51}, {"Eb3", 51}, {"E3", 52},
-    {"F3", 53}, {"F#3", 54}, {"Gb3", 54}, {"G3", 55}, {"G#3", 56}, {"Ab3", 56}, {"A3", 57},
-    {"A#3", 58}, {"Bb3", 58}, {"B3", 59},
+    {"C3", 48}, {"C3#", 49}, {"D3b", 49}, {"D3", 50}, {"D3#", 51}, {"E3b", 51}, {"E3", 52},
+    {"F3", 53}, {"F3#", 54}, {"G3b", 54}, {"G3", 55}, {"G3#", 56}, {"A3b", 56}, {"A3", 57},
+    {"A3#", 58}, {"B3b", 58}, {"B3", 59},
 
-    {"C4", 60}, {"C#4", 61}, {"Db4", 61}, {"D4", 62}, {"D#4", 63}, {"Eb4", 63}, {"E4", 64},
-    {"F4", 65}, {"F#4", 66}, {"Gb4", 66}, {"G4", 67}, {"G#4", 68}, {"Ab4", 68}, {"A4", 69},
-    {"A#4", 70}, {"Bb4", 70}, {"B4", 71},
+    {"C4", 60}, {"C4#", 61}, {"D4b", 61}, {"D4", 62}, {"D4#", 63}, {"E4b", 63}, {"E4", 64},
+    {"F4", 65}, {"F4#", 66}, {"G4b", 66}, {"G4", 67}, {"G4#", 68}, {"A4b", 68}, {"A4", 69},
+    {"A4#", 70}, {"B4b", 70}, {"B4", 71},
 
-    {"C5", 72}, {"C#5", 73}, {"Db5", 73}, {"D5", 74}, {"D#5", 75}, {"Eb5", 75}, {"E5", 76},
-    {"F5", 77}, {"F#5", 78}, {"Gb5", 78}, {"G5", 79}, {"G#5", 80}, {"Ab5", 80}, {"A5", 81},
-    {"A#5", 82}, {"Bb5", 82}, {"B5", 83},
+    {"C5", 72}, {"C5#", 73}, {"D5b", 73}, {"D5", 74}, {"D5#", 75}, {"E5b", 75}, {"E5", 76},
+    {"F5", 77}, {"F5#", 78}, {"G5b", 78}, {"G5", 79}, {"G5#", 80}, {"A5b", 80}, {"A5", 81},
+    {"A5#", 82}, {"B5b", 82}, {"B5", 83},
 
-    {"C6", 84}, {"C#6", 85}, {"Db6", 85}, {"D6", 86}, {"D#6", 87}, {"Eb6", 87}, {"E6", 88},
-    {"F6", 89}, {"F#6", 90}, {"Gb6", 90}, {"G6", 91}, {"G#6", 92}, {"Ab6", 92}, {"A6", 93},
-    {"A#6", 94}, {"Bb6", 94}, {"B6", 95},
+    {"C6", 84}, {"C6#", 85}, {"D6b", 85}, {"D6", 86}, {"D6#", 87}, {"E6b", 87}, {"E6", 88},
+    {"F6", 89}, {"F6#", 90}, {"G6b", 90}, {"G6", 91}, {"G6#", 92}, {"A6b", 92}, {"A6", 93},
+    {"A6#", 94}, {"B6b", 94}, {"B6", 95},
 
-    {"C7", 96}, {"C#7", 97}, {"Db7", 97}, {"D7", 98}, {"D#7", 99}, {"Eb7", 99}, {"E7", 100},
-    {"F7", 101}, {"F#7", 102}, {"Gb7", 102}, {"G7", 103}, {"G#7", 104}, {"Ab7", 104}, {"A7", 105},
-    {"A#7", 106}, {"Bb7", 106}, {"B7", 107},
+    {"C7", 96}, {"C7#", 97}, {"D7b", 97}, {"D7", 98}, {"D7#", 99}, {"E7b", 99}, {"E7", 100},
+    {"F7", 101}, {"F7#", 102}, {"G7b", 102}, {"G7", 103}, {"G7#", 104}, {"A7b", 104}, {"A7", 105},
+    {"A7#", 106}, {"B7b", 106}, {"B7", 107},
 
     {"C8", 108},
 
     {"-", -1} // silencio
 };
 
+
 int AudioGenerator::convert_to_midi(const std::string& nota) const
 {
     auto it = KeyToMidi.find(nota);
-    if (it != KeyToMidi.end())
-        return it->second;
-    else
-        return -1; // Nota no encontrada
+    return it->second;
 }
 
 
