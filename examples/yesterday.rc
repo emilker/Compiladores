@@ -1,6 +1,7 @@
 tempo q = 89
 time 4/4
 {
+    -w
     repeat 2 
     {
         G4 e, F4 e, F4 h. | -q, A4 e, B4 e, C5# e, D5 e, E5 e, F5 e | E5 q., D5 e, D5 h 

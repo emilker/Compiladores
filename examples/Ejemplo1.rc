@@ -1,0 +1,7 @@
+tempo q = 132
+time 4/4
+{
+    A4 e, B4 e, C5 e, D5 e, C5 q, G4 e, A4 e | G4 h, G4 h
+}
+
+

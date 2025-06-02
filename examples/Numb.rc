@@ -1,0 +1,7 @@
+tempo q = 110
+time 4/4
+{
+    -h, -e, C5# e, E5 e, C5# e | F5# q., A5 q., G5# q
+    -h, -e, C5# e, E5 e, C5# e | A5 q., G5# q., E5 q
+    -h, -e, C5# e, E5 e, C5# e 
+}

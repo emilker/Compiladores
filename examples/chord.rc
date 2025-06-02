@@ -1,4 +1,21 @@
+tempo q = 138
 time 4/4
 {
-    [C4, E4, G4] w
+    [C4, E4, G4] w | -q, -e, E4 e, E4 q, E4 q
+
+    [G3, B3, D4] w | E4 h., F4 e, D4 e
+
+    [F3, A3, C4] w | D4 h, -q, D4 e, C4 e
+
+    [G3, B3, D4] w | D4 q, D4 e, C4 e, E4 q, G3 e, A3 e
+
+    [C4, E4, G4] w | -e, E4 e, E4 e, E4 e, E4 e, E4 e, E4 q
+
+    [G3, B3, D4] w |E4 h., F4 e, D4 e
+
+    [F3, A3, C4] w |D4 h., D4 e, E4 e
+
+    [G3, B3, D4] w |D4 q, D4 q, D4 q, E4 e, C4 e
+
+    [F3, A3, C4] w| C4 e, B3 e, A3 h.
 }

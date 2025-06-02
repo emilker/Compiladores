@@ -1,0 +1,10 @@
+tempo q = 138
+time 4/4
+{
+    -q, -e, E4 e, E4 q, E4 q | E4 h., F4 e, D4 e
+    D4 h, -q, D4 e, C4 e | D4 q, D4 e, C4 e, E4 q, G3 e, A3 e
+    -e, E4 e, E4 e, E4 e, E4 e, E4 e, E4 q | E4 h., F4 e, D4 e
+    D4 h., D4 e, E4 e | D4 q, D4 q, D4 q, E4 e, C4 e
+    C4 e, B3 e, A3 h. 
+
+}

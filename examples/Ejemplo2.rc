@@ -1,0 +1,5 @@
+tempo q = 120
+time 4/4
+{
+    C6 q, D6 q, E6 q, G6 q | A6 q, B6 q, C7 h
+}
