@@ -129,7 +129,7 @@ git lfs pull
 
 ```bash
 make
-./RhythmCode examples/estrellita.rc 
+./bin/RhythmCode examples/paraElisa.rc 
 ```
 
 If parsing and analysis succeed, the file `Melodia.wav` will be generated.
